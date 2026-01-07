@@ -2,12 +2,14 @@
 
 Este repositório contém o **Trabalho de Conclusão de Curso (TCC)** desenvolvido por **Isabelly Almeida**, utilizando o **modelo LaTeX USPSC (ICMC/USP)**.
 
-O trabalho tem como objetivo o desenvolvimento e a avaliação de **sistemas de recomendação para jogos de tabuleiro modernos**, com foco em:
+O trabalho tem como objetivo o desenvolvimento, implementação e avaliação de **sistemas de recomendação aplicados a jogos de tabuleiro modernos**, com foco em abordagens clássicas e híbridas, avaliadas sob múltiplas dimensões de desempenho.
 
-- Filtragem Colaborativa  
-- Modelos Baseados em Conteúdo  
-- Modelos Híbridos  
-- Avaliação por métricas de erro e ranking  
+As principais técnicas exploradas incluem:
+
+- Filtragem Colaborativa
+- Modelos Baseados em Conteúdo
+- Modelos Híbridos
+- Avaliação por métricas de erro e ranking
 
 ---
 
@@ -25,3 +27,64 @@ O trabalho tem como objetivo o desenvolvimento e a avaliação de **sistemas de 
 ├── images/                    # Figuras e gráficos
 ├── limpar_latex_temp.bat      # Script para limpar arquivos temporários do LaTeX
 └── .gitignore
+````
+
+---
+
+
+## 📦 Bases de dados
+
+As bases de dados utilizadas neste trabalho **não estão versionadas neste repositório**, em razão do seu grande volume.
+
+### 🔗 Fonte dos dados
+
+Os dados foram obtidos a partir do dataset público:
+
+**Board Games Database from BoardGameGeek**
+
+Disponível na plataforma **Kaggle**:
+[https://www.kaggle.com/datasets/threnjen/board-games-database-from-boardgamegeek](https://www.kaggle.com/datasets/threnjen/board-games-database-from-boardgamegeek)
+
+O dataset é composto por informações extraídas do portal BoardGameGeek, incluindo:
+
+* avaliações de usuários
+* metadados dos jogos
+* informações de mecânicas, designers, artistas e editoras
+
+Estrutura esperada:
+
+```text
+bases/
+├── user_ratings.csv
+├── games.csv
+├── mechanics.csv
+├── designers_reduced.csv
+├── publishers_reduced.csv
+└── artists_reduced.csv
+```
+
+---
+
+### ⚠️ Observação importante
+
+A pasta `bases/` está listada no arquivo `.gitignore` e **não deve ser versionada** neste repositório.
+
+---
+
+## 🧹 Limpeza de arquivos temporários do LaTeX
+
+Durante a compilação do documento, o LaTeX gera diversos arquivos auxiliares.
+Para removê-los automaticamente, utilize o script:
+
+```bash
+limpar_latex_temp.bat
+```
+
+---
+
+
+## 📜 Licença
+
+Este repositório possui **finalidade exclusivamente acadêmica**.
+
+````
