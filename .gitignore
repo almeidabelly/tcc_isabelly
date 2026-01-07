@@ -1,0 +1,30 @@
+# Bases de dados (não versionar)
+bases/
+bases/**
+
+# LaTeX temporários
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.loq
+*.synctex.gz
+*.idx
+*.ilg
+*.ind
+*.fls
+*.fdb_latexmk
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Sistema
+.DS_Store
+Thumbs.db
+bases/

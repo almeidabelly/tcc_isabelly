@@ -1,0 +1,158 @@
+
+\section{Origem dos dados}
+
+O \textit{Kaggle} \cite{kaggle} é uma plataforma online voltada para ciência de dados e aprendizado de máquina. Ela oferece competições com dados reais, notebooks interativos, datasets públicos e um fórum para colaboração entre cientistas de dados de todo o mundo. Também serve como repositório gratuito de dados para projetos acadêmicos e profissionais.
+
+Entre os muitos conjuntos de dados hospedados no \textit{Kaggle}, destaca-se a base derivada do \textit{BoardGameGeek} (BGG) — um dos maiores bancos de dados e comunidades online dedicadas a jogos de tabuleiro. No BGG, os usuários registram suas coleções, atribuem avaliações, compartilham resenhas e discutem estratégias, o que torna o site uma referência consolidada tanto para a indústria quanto para a academia em análises envolvendo jogos de tabuleiro.
+
+
+\section{Estrutura da Base de Dados}
+
+A base de dados \textit{``Board Games Database from BoardGameGeek''}, hospedada no próprio \textit{Kaggle} e organizada pelo usuário \textit{threnjen} reune dados públicos do site \textit{BoardGameGeek}, incluindo infomrações a cerca de 22.000 jogos, 411.000 usuários e aproximadamente 19 milhões de avaliações. Segundo o próprio autor \cite{threnjen_boardgames_bgg_2025} a base é ideal para análises exploratórias, modelagem preditiva e sistemas de recomendação.
+
+Este conjunto de dados inclui nove arquivos potenciais para exploração e/ou modelagem que são:
+
+\begin{enumerate}
+
+    \item \textbf{\texttt{games.csv}}: o arquivo de informações básicas com 47 classificações sobre cada um dos 22 mil jogos de tabuleiro. A chave primária é \texttt{BGGId}, que é o ID do jogo.
+    
+    \item \texttt{\textbf{ratings\_distribution.csv}}: inclui a distribuição completa das classificações para cada \texttt{BGGId}
+    
+    \item \texttt{\textbf{themes.csv}}: tabela de temas para cada \texttt{BGGId}
+    
+    \item \texttt{\textbf{mechanics.csv}}: tabela de mecânicas com sinalizadores binários por \texttt{BGGId}
+    
+    \item \texttt{\textbf{subcategories.csv}}: tabela de subcategorias com sinalizadores binários por \texttt{BGGId} 
+    
+    \item \texttt{\textbf{artists\_reduce}}: fornece informações sobre os artistas para cada \texttt{BGGId}. Este arquivo é reduzido para artistas com menos de 3 obras, com um sinalizador binário indicando que o jogo incluiu um artista com 3 ou mais obras.
+    
+    \item \texttt{\textbf{designers\_reduced}}: fornece informações do designer para cada \texttt{BGGId}. Este arquivo é reduzido para designers com menos 3 obras, com um sinalizador binário indicando que o jogo incluiu um designer com 3 ou mais obras.
+    
+    \item \textbf{\texttt{publishers\_reduced}}: fornece informações da editora para cada \texttt{BGGId}. Este arquivo é reduzido para editoras com menos de 3 obras, com um sinalizador binário indicando que o jogo incluiu uma editora com 3 ou mais obras.
+    
+    \item \textbf{\texttt{user\_ratings.csv}}: contém todas as avaliações para todos os \texttt{BGGId} com nome de usuário. Existem mais de 411 mil usuários únicos e aproximadamente 19 milhões de avaliações.
+
+\end{enumerate}
+
+
+\section{Seleção e Integração das Tabelas Utilizadas}
+
+Embora a base do \textit{BoardGameGeek} contenha nove arquivos distintos, nem todos são igualmente relevantes para a construção de um sistema de recomendação eficiente. Considerando os objetivos deste trabalho — desenvolver um modelo de recomendação que una viabilidade computacional e representatividade dos dados — foram selecionadas apenas três tabelas principais: \texttt{\textbf{user\_ratings}}, \texttt{\textbf{games}} e \texttt{\textbf{mechanics}}.
+
+A escolha se justifica pelos seguintes motivos:
+
+\begin{itemize}
+    
+    \item \texttt{\textbf{user\_ratings:}} Essencial para recomendações baseadas em filtragem colaborativa (FC). Como essa tabela contém as avaliações dos usuários, ela permite construir a matriz usuário–item, que é fundamental para entender quem avaliou o quê e com qual nota jpá que contém a ID do jogo (\texttt{BGGId}), o nome do usuário (\texttt{Username}) e a avaliação (\texttt{Rating}).
+    
+    % \begin{center}
+    %     \captionof{table}{Cabeçalho da tabela USER.RATINGS}
+    %     \label{tab:user_ratings}
+    %     \begin{tabular}{rrl}
+    %         \toprule
+    %         BGGId & Rating & Username \\
+    %         \midrule
+    %         213788 & 8.000000 & Tonydorrf \\
+    %         213788 & 8.000000 & tachyon14k \\
+    %         213788 & 8.000000 & Ungotter \\
+    %         213788 & 8.000000 & brainlocki3 \\
+    %         213788 & 8.000000 & PPMP \\
+    %         \bottomrule
+    %     \end{tabular}
+    % \end{center}    
+    
+    \item \texttt{\textbf{games:}} Fornece atributos globais dos jogos, como nome (\texttt{Name}), ano de publicação (\texttt{YearPublished}), avaliação média (\texttt{AvgRating}), categorias principais, entre outros. Esses atributos são úteis na identificação dos jogos baseadas nos \texttt{BGGId} presentes na tabela de avaliações dos usuários, além de permitir a extração de características uteis para limpeza e análise exploratória dos dados.
+    
+    \item \texttt{\textbf{mechanics:}} É uma tabela de características binárias que indicam se um jogo possui determinadas mecânicas (como \textit{``Deck Building''}). Essas características são extremamente úteis para recomendações por similaridade de conteúdo (BC), pois permitem identificar jogos com atributos semelhantes, facilitando a recomendação de jogos que compartilham elementos específicos apreciados pelos usuários.
+
+\end{itemize}
+
+A combinação dessas três fontes é suficiente para representar, de forma equilibrada, as dimensões de interação (usuário–item) e conteúdo (atributos dos jogos), preservando o potencial analítico sem comprometer a eficiência computacional do sistema.  
+Outros arquivos da base (\textit{Themes}, \textit{Publishers}, \textit{Designers}, entre outros) foram descartados por apresentarem menor relevância direta para o modelo ou por aumentarem significativamente o volume de dados sem ganho proporcional de informação.
+
+
+%\section{Pré-processamentos dos Dados}
+
+%Sobre a o arquivo \textbf{GAMES}, algumas variáveis foram ajustadas para facilitar a análise:
+
+% \begin{center}
+% \begin{tabular}{ll}
+%     \captionof{table}{Variáveis do arquivo GAMES}
+%     \label{tab:games_vars}
+%     \toprule
+%     Tipo de Variável & Variáveis \\
+%     \midrule
+%     Informação sobre os jogos & BGGId, Name, Description, YearPublished, Family, ImagePath \\
+%     Métricas contínuas de avaliação/complexidade & GameWeight, AvgRating, BayesAvgRating, StdDev, LanguageEase \\
+%     Número de jogadores e idade & MinPlayers, MaxPlayers, ComAgeRec, BestPlayers, GoodPlayers, MfgAgeRec \\
+%     Tempo de jogo & MfgPlayTime, ComMinPlaytime, ComMaxPlaytime \\
+%     Popularidade ou Engajamento & NumOwned, NumWant, NumWish, NumWeightVotes, NumUserRatings, NumComments \\
+%     Estrutura ou Versão & NumAlternates, NumExpansions, NumImplementations, IsReimplementation \\
+%     Origem ou financiamento & Kickstarted \\
+%     Ranks oficiais & Rank:boardgame, Rank:strategygames, Rank:abstracts, Rank:familygames, Rank:thematic, Rank:cgs, Rank:wargames, Rank:partygames, Rank:childrensgames \\
+%     Categóricas & Cat:Thematic, Cat:Strategy, Cat:War, Cat:Family, Cat:CGS, Cat:Abstract, Cat:Party, Cat:Childrens \\
+% \bottomrule
+% \end{tabular}
+% \end{center}
+
+
+\begin{comment}
+\subsection{Construção da Matriz R}
+
+A partir do arquivo \textbf{USER\_RATINGS}, será construída a matriz de avaliações conforme visto em \eqref{eq:matriz_user_item}, de tal forma que \( R \in \mathbb{R}^{m \times n} \), onde:
+\begin{equation}
+    \label{eq:matriz_r}
+R = [r_{uj}], \quad
+r_{uj} =
+\begin{cases}
+\text{nota atribuída pelo usuário } u \text{ ao jogo } j, & \text{se houver avaliação;} \\
+0, & \text{caso contrário.}
+\end{cases}
+\end{equation}
+
+Nessa estrutura, \( m \) representa o número de usuários únicos e \( n \) o número total de jogos. A matriz é tipicamente esparsa, já que cada usuário avalia apenas uma pequena fração dos itens disponíveis.  
+
+O tamanho original do arquivo \textbf{USER\_RATINGS} é de aproximadamente 380 MB (sem tratamento), o que torna custoso o carregamento completo na memória e as operações iterativas de modelagem. Assim, foi necessário aplicar estratégias de pré-processamento e amostragem para tornar o sistema de recomendação mais leve e computacionalmente eficiente.
+
+
+
+\subsection{Estratégias de Redução e Otimização}\label{sec:reducao}
+
+Para viabilizar as análises e reduzir o custo computacional, foram adotadas as seguintes medidas:
+
+\begin{itemize}
+    \item \textbf{Filtragem temporal:} foram mantidos apenas os jogos lançados a partir da década de 1990, de modo a concentrar a análise no mercado moderno de jogos de tabuleiro, caracterizado por maior diversidade mecânica e volume de avaliações no \textit{BoardGameGeek}.
+
+\begin{codigo}[caption = {Filtragem de GAMES.csv}, label={codigo:filtra_games},language=python, breaklines=true]
+    # Jogos lançados a partir da década de 1990
+    games_modern = games[games["YearPublished"] >= 1990]
+\end{codigo}
+    
+    
+    \item \textbf{Filtragem de usuários e jogos com baixa atividade:} foram excluídos usuários com poucas avaliações e jogos com reduzido número de notas, diminuindo a dimensionalidade da matriz \( R \) sem perda significativa de informação.
+    
+\begin{codigo}[caption = {Filtragem de Baixa Atividade}, label={codigo:filtra_bx_atvdd},language=python, breaklines=true]
+    # usuários com menos de 20 avaliações são removidos     
+    min_user_ratings = 20   
+
+    # jogos com menos de 50 avaliações são removidos
+    min_game_ratings = 50     
+
+    user_counts = ratings["Username"].value_counts()
+    game_counts = ratings["BGGId"].value_counts()
+\end{codigo}
+    
+    \item \textbf{Amostragem controlada:} seleção de subconjuntos representativos de usuários e jogos, mantendo a distribuição estatística das notas e o equilíbrio entre popularidade e diversidade.
+    
+\begin{codigo}[caption = {Amostragem Controlada}, label={codigo:amostragem_controlada},language=python, breaklines=true]
+    # Exemplo: seleciona 10.000 usuários aleatoriamente
+    sampled_users = ratings["Username"].drop_duplicates().sample(10000, random_state=42)
+    ratings = ratings[ratings["Username"].isin(sampled_users)]
+\end{codigo}
+    
+    %\item \textbf{Conversão para formato esparso:} representação matricial por meio de estruturas otimizadas (como \textit{Compressed Sparse Row – CSR} ou \textit{Coordinate Format – COO}), reduzindo significativamente o uso de memória e o tempo de execução.
+\end{itemize}
+
+Essas etapas garantem a viabilidade do treinamento e da avaliação dos modelos de recomendação, mantendo a integridade estatística dos dados e a interpretabilidade dos resultados.
+
+\end{comment}

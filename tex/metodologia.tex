@@ -1,0 +1,610 @@
+% Comando simples para exibir comandos Latex no texto
+% \newcommand{\comando}[1]{\textbf{$\backslash$#1}}
+
+Na era da sobrecarga de informações, onde explosão de conteúdos e produtos online torna desafiador para os usuários encontrar itens relevantes, os \textit{Sistemas de Recomendação} (SRs) emergem como ferramentas essenciais para personalizar a experiência do usuário. Eles utilizam algoritmos avançados para analisar dados de comportamento e preferências, oferecendo sugestões que facilitam a tomada de decisão. Esta seção explora os fundamentos dos SRs, suas abordagens principais, desafios comuns, algoritmos utilizados e métricas de avaliação, além de destacar suas aplicações em diversos domínios.
+
+\section{O que são Sistemas de Recomendação}\label{sec:o_que_sao_sistemas_de_recomendacao}
+
+Sistemas de Recomendação (SR) são ferramentas de software e algoritmos, frequentemente baseadas em inteligência artificial que fornencem sugestões personalizadas de itens relevantes aos usuários. Nesse sentido, o termo ``item'' é usado para se referir a qualquer entidade que possa ser recomendada, como produtos, serviços, conteúdos digitais, ou até mesmo pessoas (em redes sociais ou plataformas de namoro) \cite{adomavicius2005toward, ricci2010introduction,aggarwal2016recommender}.
+
+O principal objetivo dos SRs é apoiar os usuários em processos de tomada de decisão, atuando como uma estratégia eficaz para mitigar a sobrecarga de informações, especialmente em ambientes online com grande volume de dados. 
+
+A tarefa de recomendação pode ser formulada de diferentes maneiras, sendo os dois enfoques mais comuns: 
+
+\begin{enumerate}
+    \item Versão Preditiva: a abordagem consiste na solução de um problema de regressão onde o sistema prevê os valores da classificação para uma combinação usuário-item, como a previsão de uma nota de 1 a 5 estrelas que um usuário pode atribuir a um filme ou produto. Por suposição, tem-se que os dados de treinamento são compostos por avaliações explícitas ou implícitas fornecidas pelos usuários. Para m usuários e n itens,  tem-se uma matriz $m \times n$ incompleta, o objetivo então é prever a avaliação $r_{ui}$ desconhecida que o usuário $u$ daria ao item $i$. Esse problema é conhecido como ``problema de complementação de matriz'' \cite{aggarwal2016recommender};
+    
+    \item Versão de Classificação: nesta abordagem não é necessária a predição de uma nota específica, mas sim a identificação dos $k$ principais itens que um usuário pode gostar ou determinar os $k$ principais usuários a serem segmentados a um item específico, sendo a primeira abordagem mais comum. 
+    
+%    \item como um problema de ranking, relacionado aos dois anteriores, onde o sistema ordena itens com base na probabilidade de interesse do usuário, apresentando os mais relevantes no topo da lista.
+\end{enumerate}
+
+Apesar de no seu surgimento os SRs serem predominantemente desenvolvidos para auxiliar os usuários no problema da ``Tirania da Escolha'' como descreveu \citeonline{ricci2010introduction}, os SRs representam um instrumento estratégico para empresas que buscam aumentar o engajamento do usuário, a retenção de clientes e, consequentemente, suas receitas. Plataformas como \textit{Amazon}, \textit{Netflix}, \textit{Spotify}, \textit{YouTube}, \textit{Instagram} e \textit{TikTok} são exemplos notáveis de como os SRs podem transformar a experiência do usuário, oferecendo recomendações personalizadas que facilitam a descoberta de novos produtos ou conteúdos, diversificando seu catálogo e fidelizando os consumidores.
+
+\section{Objetivos dos Sistemas de Recomendação}\label{sec:objetivos}
+
+Segundo \citeonline{aggarwal2016recommender} o objetivo de um SR é o aumento da receita sobre a venda de produtos, serviços ou conteúdos. Ao sugerirem itens cuidadosamente selecionados de acordo com as preferências do usuário, esses sistemas direcionam a atenção para produtos relevantes, elevando o volume de consumo e, consequentemente, a receita do provedor. Para atingir esse objetivo mais amplo, \citeonline{aggarwal2016recommender} destaca quatro metas operacionais e técnicas mais comuns em SRs: relevância, novidade, serendipidade e diversidade.
+
+A relevância refere-se à capacidade do sistema de recomendar itens que realmente interessam ao usuário, aumentando a probabilidade de interação e satisfação. A novidade diz respeito à introdução de itens novos ou pouco conhecidos, incentivando a exploração e descoberta de conteúdos ou produtos que o usuário ainda não experimentou. A serendipidade envolve a recomendação de itens inesperados, mas que acabam sendo apreciados pelo usuário, proporcionando uma experiência agradável e surpreendente. Por fim, a diversidade busca oferecer uma gama variada de recomendações, evitando a monotonia e ampliando o leque de opções disponíveis para o usuário.
+
+Entretanto, em complemento a visão acima, \citeonline{ricci2010introduction} destacam que a função de um sistema de recomendação vai além da busca pelo lucro, podendo desempenhar multiplas funções dentro de um ecossistema de recomendação. Além de recomendar itens isolados (“\textit{find some good items}”), eles podem propor conjuntos coerentes de itens (“\textit{recommend a bundle}”), sequências ordenadas (“\textit{recommend a sequence}”), auxiliar na navegação exploratória de catálogos (“\textit{just browsing}”), permitir que o usuário expresse suas preferências (“\textit{express self}”) ou contribua com avaliações que beneficiem a comunidade (“\textit{help others}”). Essas diferentes funções revelam que os sistemas de recomendação devem equilibrar os interesses de provedores e usuários, oferecendo valor mútuo e sustentando a dinâmica de personalização que caracteriza a economia da informação.
+
+Enquanto \citeonline{aggarwal2016recommender} enfatiza a maximização de receita por meio da experiência do usuário, Ricci et al. ampliam a compreensão sobre o papel dos sistemas de recomendação, destacando funções que nem sempre estão diretamente ligadas ao lucro, mas que apoiam a interação, exploração e satisfação do usuário
+
+% Embora \cite{aggarwal2016recommender} e \cite{ricci2010introduction} abordem os sistemas de recomendação sob perspectivas diferentes — o primeiro defende uma ideia geral de aumento de receita e o segundo sendo mais focado na experiência do usuário — as ideias de ambos convergem em reconhecem que a eficácia de um SRs não se limita à precisão das sugestões, dependem também da sua capacidade de gerar descobertas relevantes, diversificadas e inesperadas, equilibrando os objetivos estratégicos do provedor e as expectativas subjetivas do usuário. 
+\section{Breve Histórico e Evolução}\label{sec:breve_historico_e_evolucao}
+
+O campo de investigação científica em SR evoluiu significativamente a partir dos anos 1990. O crédito pelo pioneirismo é frequentemente atribuído a Jussi Karlgren, que em 1990 elaborou uma álgebra para recomendação, visando melhorar a interação humano-computador com modelos estatísticos \cite{karlgren1994recommendationalgebra}. 
+
+Em 1992, David Goldberg et al. desenvolveram e publicaram o software Tapestry, que utilizava o conceito de ``filtragem colaborativa'' para recomendar documentos de notícias por e-mail, sendo considerado o primeiro SR computacional. Em 1994, o projeto GroupLens, do MIT e da Universidade de Minnesota, apoiou investigações em SR, preocupando-se com a sobrecarga de informações e propondo uma estrutura para que os usuários pudessem avaliar mensagens em newsgroups \cite{goldberg1992using}.
+
+Em 2006, a \textit{Netflix} lançou o \textit{Netflix Prize}, oferecendo um milhão de dólares para quem desenvolvesse um sistema de recomendação com pelo menos 10\% mais acurácia do que o Cinematch, seu sistema da época, evidenciando a importância da pesquisa na área \cite{aggarwal2016recommender}.
+
+Após o impulso dado pelo \textit{Netflix Prize}, tornou-se comum a utilização de técnicas de Aprendizagem de Máquina (ML) em SRs. Por exemplo, em se tratando da abordagem usando classificação, algorítmos como Máquinas de Vetores de Suporte (SVM), Árvores de Decisão, Classificadores Bayesianos e K-Vizinhos Mais Próximos (KNN) passaram a ser empregados para melhorar a precisão das recomendações.
+
+Nos últimos anos, SRs têm sido fortemente associados a técnicas de Aprendizagem de Máquina (ML), incluindo Aprendizagem Profunda (Deep Learning - DL) e Redes Neurais Profundas (Deep Neural Networks - DNN), para construir recomendações relevantes e eficientes \cite{azambuja2021teoria}.
+
+
+\section{Tipos e Abordagens de Sistemas de Recomendação}\label{sec:tipos_e_abordagens_de_sistemas_de_recomendacao}
+
+Os sistemas de recomendação utilizam dois tipos principais de dados: (i) interações usuário-item, como avaliações, histórico de compras ou comportamento de navegação, e (ii) atributos de usuários e itens, como perfis textuais, características demográficas ou palavras-chave relevantes. 
+
+Os métodos que se baseiam nas interações são chamados de filtragem colaborativa, enquanto os que exploram atributos recebem o nome de baseados em conteúdo. Embora esses sistemas frequentemente usem matrizes de classificação, os métodos baseados em conteúdo concentram-se nas avaliações de um único usuário, em vez de considerar todo o conjunto de usuários. Já os sistemas baseados em conhecimento utilizam requisitos explicitamente fornecidos pelo usuário e informações externas para gerar recomendações, sem depender de dados históricos de avaliação ou compra. Por fim, os sistemas híbridos combinam diferentes abordagens, integrando os pontos fortes de cada método para fornecer recomendações mais precisas e consistentes em diferentes contextos.
+
+\subsection{Filtragem Colaborativa}\label{sec:sistemas_fc}
+
+A Filtragem Colaborativa (FC) é uma abordagem central em sistemas de recomendação, baseada na ideia de que \emph{usuários com preferências semelhantes tendem a gostar de itens semelhantes}. Essa abordagem utiliza interações históricas entre usuários e itens, como avaliações, compras ou cliques, que são organizadas em uma matriz de interações:
+
+\begin{equation}
+    \label{eq:matriz_user_item}
+R = 
+\begin{bmatrix}
+r_{1,1} & r_{1,2} & \dots & r_{1,n} \\
+r_{2,1} & r_{2,2} & \dots & r_{2,n} \\
+\vdots & \vdots & \ddots & \vdots \\
+r_{m,1} & r_{m,2} & \dots & r_{m,n} \\
+\end{bmatrix},
+\end{equation}
+onde \(R \in \mathbb{R}^{m \times n}\) representa as avaliações de \(m\) usuários em \(n\) itens, e \(r_{u,i}\) é a avaliação ou interação do usuário \(u\) com o item \(i\). A matriz \(R\) é geralmente esparsa, pois nem todos os usuários interagem com todos os itens.
+
+\subsubsection{Abordagem baseada em usuários}\label{sec:fc_user_user}
+
+Nesta abordagem, a similaridade entre usuários é calculada a partir das linhas da matriz \(R\). Usuários com comportamentos similares são considerados “vizinhos”, e recomenda-se a um usuário itens que seus vizinhos avaliaram positivamente. A previsão da avaliação \(\hat{r}_{u,i}\) de um usuário \(u\) para um item \(i\) é dada por:
+
+\begin{equation}
+    \label{eq:previsao_user}
+\hat{r}_{u,i} = \bar{r}_u + \frac{\sum_{v \in N(u)} \text{sim}(u,v) \cdot (r_{v,i} - \bar{r}_v)}{\sum_{v \in N(u)} |\text{sim}(u,v)|},
+\end{equation}
+onde:
+\begin{itemize}
+    \item \(\bar{r}_u\) é a média das avaliações do usuário \(u\);
+    \item \(N(u)\) é o conjunto de vizinhos mais similares a \(u\);
+    \item \(\text{sim}(u,v)\) é a similaridade entre usuários \(u\) e \(v\);
+    \item \(r_{v,i}\) é a avaliação do usuário \(v\) para o item \(i\).
+\end{itemize}
+
+\subsubsection{Abordagem baseada em itens}\label{sec:fc_item_item}
+
+Na abordagem baseada em itens, a similaridade é medida entre itens, considerando as colunas da matriz \(R\). A previsão da avaliação de um usuário \(u\) para um item \(i\) é:
+
+\begin{equation}
+    \label{eq:previsao_item}
+\hat{r}_{u,i} = \frac{\sum_{j \in I_u} \text{sim}(i,j) \cdot r_{u,j}}{\sum_{j \in I_u} |\text{sim}(i,j)|},
+\end{equation}
+onde:
+\begin{itemize}
+    \item \(I_u\) é o conjunto de itens previamente avaliados pelo usuário \(u\);
+    \item \(\text{sim}(i,j)\) é a similaridade entre os itens \(i\) e \(j\).
+\end{itemize}
+
+
+\begin{comment}
+\subsubsection{Filtragem colaborativa baseada em modelos}\label{sec:filtragem_colaborativa_baseada_em_modelos}
+
+A FC baseada em modelos busca aproximar a matriz \(R\) por meio de matrizes de fatores latentes, capturando relações implícitas entre usuários e itens. A \emph{fatoração de matrizes} representa \(R\) como:
+
+\begin{equation}
+    \label{eq:fatoracao_matrizes}
+R \approx P Q^T,
+\end{equation}
+onde:
+\begin{itemize}
+    \item \(P \in \mathbb{R}^{m \times k}\) contém os vetores de fatores latentes dos usuários;
+    \item \(Q \in \mathbb{R}^{n \times k}\) contém os fatores latentes dos itens;
+    \item \(k \ll m,n\) é a dimensão do espaço latente.
+\end{itemize}
+
+A previsão de avaliação é então calculada como:
+
+\begin{equation}
+    \label{eq:previsao_modelo}
+\hat{r}_{u,i} = \mathbf{p}_u^T \mathbf{q}_i \text{.}
+\end{equation}
+
+O treinamento dessas matrizes busca minimizar a \emph{função de erro quadrático regularizada}:
+
+\begin{equation}
+    \label{eq:funcao_erro}
+\min_{P,Q} \sum_{(u,i) \in \mathcal{K}} (r_{u,i} - \mathbf{p}_u^T \mathbf{q}_i)^2 + \lambda (\| \mathbf{p}_u \|^2 + \| \mathbf{q}_i \|^2),
+\end{equation}
+onde:
+\begin{itemize}
+    \item \(\mathcal{K}\) é o conjunto de avaliações conhecidas;
+    \item \(\lambda\) é o parâmetro de regularização.
+\end{itemize}
+Essa abordagem permite capturar relações latentes complexas, lidar com a esparsidade da matriz de interações e fornecer recomendações mais precisas.
+
+\end{comment}
+
+\begin{comment}
+\subsection{Sistemas Baseados em Conteúdo}\label{sec:sistemas_baseados_em_conteudo}
+
+Os sistemas de recomendação baseados em conteúdo utilizam as \emph{características dos itens} e as preferências individuais do usuário para gerar recomendações. Diferentemente da filtragem colaborativa, não dependem de interações de outros usuários, focando exclusivamente no perfil do usuário-alvo.
+
+\subsubsection{Representação Matemática}
+
+Seja um conjunto de usuários \(U\) e itens \(I\), cada item \(i \in I\) é representado por um vetor de atributos \(\mathbf{i} \in \mathbb{R}^d\), enquanto cada usuário \(u \in U\) possui um vetor de perfil \(\mathbf{u} \in \mathbb{R}^d\) que representa suas preferências sobre as características dos itens. A previsão de avaliação do usuário \(u\) para o item \(i\) é dada pela similaridade entre \(\mathbf{u}\) e \(\mathbf{i}\):
+
+\begin{equation}
+    \label{eq:previsao_conteudo}
+\hat{r}_{u,i} = f(\mathbf{u}, \mathbf{i}) = \frac{\mathbf{u} \cdot \mathbf{i}}{\|\mathbf{u}\| \, \|\mathbf{i}\|} \text{.}
+\end{equation}
+
+
+\subsubsection{Atualização do Perfil do Usuário}\label{sec:atualizacao_do_perfil_do_usuario}
+
+O vetor de perfil \(\mathbf{u}\) é atualizado continuamente conforme novas interações acontecem. Se o usuário avalia positivamente um item \(i\), o vetor de características do item é incorporado ao perfil:
+
+\begin{equation}
+    \label{eq:atualizacao_perfil}
+\mathbf{u}^{(t+1)} = (1-\alpha)\mathbf{u}^{(t)} + \alpha \mathbf{i},
+\end{equation}
+onde \(\alpha \in [0,1]\) é um fator de aprendizado que controla o peso da nova interação.
+
+\subsubsection{Previsão com Múltiplos Atributos}\label{sec:previsao_com_multiplos_atributos}
+
+Quando os itens possuem múltiplos tipos de atributos (\(d_1, d_2, \dots, d_k\)), é possível ponderar cada dimensão:
+
+\begin{equation}    
+    \label{eq:previsao_multiplos_atributos}
+\hat{r}_{u,i} = \frac{\sum_{j=1}^{k} w_j u_j i_j}{\sqrt{\sum_{j=1}^{k} (w_j u_j)^2} \sqrt{\sum_{j=1}^{k} (w_j i_j)^2}},
+\end{equation}
+onde \(w_j\) é o peso da característica \(j\), permitindo enfatizar atributos mais relevantes para cada usuário.
+\end{comment}
+
+\subsection{Sistemas Baseados em Conteúdo}\label{sec:sistemas_bc}
+
+De acordo com \citeonline{aggarwal2016recommender}, os Sistemas de Recomendação Baseados em Conteúdo (BC) fundamentam-se na premissa de que a relevância de um item para um usuário pode ser determinada pela similaridade entre os atributos desse item e as preferências históricas manifestadas pelo próprio usuário. Diferentemente da filtragem colaborativa, esta abordagem não utiliza informações da comunidade de usuários (\textit{peer users}), tornando-se robusta ao problema de \textit{cold-start} de novos itens, desde que seus atributos sejam conhecidos.
+
+\subsubsection{Representação de Atributos e Similaridade}
+
+Nesta abordagem, a representação dos itens é crucial. Cada item \(i\) é descrito por um vetor de características \(\mathbf{x}_i\) extraído de seus metadados (como palavras-chave, gênero ou, neste trabalho, mecânicas de jogo). A relação entre dois itens é quantificada por uma função de similaridade \(Sim(i, j)\).
+
+Segundo \citeonline{aggarwal2016recommender}, a escolha da métrica de similaridade deve refletir a natureza dos dados:
+\begin{itemize}
+    \item \textbf{Similaridade do Cosseno:} Padrão para dados vetoriais esparsos e contínuos (como representações de texto TF-IDF).
+    \item \textbf{Coeficiente de Jaccard:} Recomendado para atributos binários ou categóricos (conjuntos), onde o interesse reside na sobreposição de características presentes.
+\end{itemize}
+
+\subsection{Predição Baseada em Vizinhança de Conteúdo}\label{sec:vizinhaca}
+
+Embora seja possível treinar modelos de classificação complexos (como Bayes ou Árvores de Decisão) para cada usuário, uma abordagem eficiente e amplamente utilizada é a Classificação de Vizinhos Mais Próximos ($k$-NN) aplicada ao Conteúdo, conforme descrito na Seção 4.4 de \citeonline{aggarwal2016recommender}.
+
+Neste método, a predição da nota \(\hat{r}_{u,i}\) para um item alvo \(i\) é calculada através da média ponderada das avaliações que o usuário \(u\) atribuiu aos \(k\) itens mais similares a \(i\) em seu próprio histórico. 
+
+Define-se \(N_u(i)\) como o conjunto de vizinhos de conteúdo do item \(i\) restrito às avaliações do usuário \(u\). Formalmente:
+
+\begin{equation}
+    \label{eq:previsao_conteudo_knn}
+    \hat{r}_{u,i} = \frac{\sum_{j \in N_u(i)} \text{sim}(i, j) \cdot r_{u,j}}{\sum_{j \in N_u(i)} |\text{sim}(i, j)|},
+\end{equation}
+onde:
+\begin{itemize}
+    \item \(N_u(i)\) é o subconjunto de itens previamente avaliados pelo usuário \(u\) que possuem maior similaridade de conteúdo com o item alvo \(i\).
+    \item \(r_{u,j}\) é a nota real dada pelo usuário ao item histórico \(j\).
+\end{itemize}
+
+Essa formulação permite que a recomendação seja diretamente explicável pelos atributos compartilhados entre o item recomendado e o histórico do usuário.
+
+
+
+\begin{comment}
+\subsubsection{Integração em Matriz de Fatores Latentes}
+
+Outra estratégia é integrar informações de conteúdo na fatoração de matrizes da filtragem colaborativa. Seja a matriz de avaliações \(R \in \mathbb{R}^{m \times n}\), a fatoração com conteúdo é:
+
+\begin{equation}
+    \label{eq:fatoracao_matrizes_conteudo}
+R \approx P Q^T + F W^T,
+\end{equation}
+onde:  
+\begin{itemize}
+    \item \(P \in \mathbb{R}^{m \times k}\) são fatores latentes dos usuários;  
+    \item \(Q \in \mathbb{R}^{n \times k}\) são fatores latentes dos itens;  
+    \item \(F \in \mathbb{R}^{n \times d}\) é a matriz de atributos dos itens;  
+    \item \(W \in \mathbb{R}^{d \times k}\) projeta atributos no espaço latente.
+\end{itemize}
+
+A função de custo a ser minimizada é:
+
+\begin{equation}
+    \label{eq:funcao_erro_conteudo}
+\min_{P,Q,W} \sum_{(u,i) \in \mathcal{K}} (r_{u,i} - \mathbf{p}_u^T \mathbf{q}_i - \mathbf{f}_i^T W \mathbf{p}_u)^2 + \lambda (\|P\|^2 + \|Q\|^2 + \|W\|^2),
+\end{equation}
+onde \(\mathbf{f}_i\) é o vetor de atributos do item \(i\).
+
+%\subsection{Vantagens dos Sistemas Híbridos}
+
+% Os sistemas híbridos permitem:  
+% \begin{itemize}
+%     \item Melhorar a precisão combinando abordagens complementares;  
+%     \item Mitigar o problema de \emph{cold-start} de usuários e itens;  
+%     \item Aumentar a diversidade e cobertura das recomendações.  
+% \end{itemize}
+\end{comment}
+
+
+\subsection{Modelo Baseline (Ajuste por Viés)}\label{sec:modelo_baseline}
+
+Frequentemente, as avaliações em Sistemas de Recomendação não refletem apenas a interação específica entre um usuário e um item, mas também carregam tendências sistemáticas — ou vieses — que independem dessa interação. Segundo \citeonline{aggarwal2016recommender}, o Modelo Baseline assume que a classificação $r_{ui}$ pode ser decomposta em uma componente global e vieses específicos.
+
+A previsão da avaliação $\hat{r}_{u,i}$ é dada pela soma de três termos:
+
+\begin{equation}
+    \label{eq:previsao_baseline}
+    \hat{r}_{u,i} = \mu + b_u + b_i,
+\end{equation}
+onde $\mu$ é a média global, $b_u$ é o viés do usuário e $b_i$ é o viés do item.
+
+\subsubsection{Estimação dos Parâmetros}
+
+Embora esses parâmetros possam ser estimados através da minimização de mínimos quadrados regularizados (ALS ou SGD), este trabalho adota a abordagem heurística de desacoplamento de médias, que oferece alta eficiência computacional sem perda significativa de precisão para bases densas. O cálculo é realizado em três etapas sequenciais:
+
+\paragraph{1. Média Global ($\mu$):}
+Calculada como a média aritmética de todas as avaliações conhecidas no conjunto de treinamento $\mathcal{K}$:
+
+\begin{equation}
+    \label{eq:calculo_mu}
+    \mu = \frac{\sum_{(u,i) \in \mathcal{K}} r_{u,i}}{|\mathcal{K}|}.
+\end{equation}
+
+\paragraph{2. Viés do Item ($b_i$):}
+Representa o desvio médio das notas recebidas pelo item $i$ em relação à média global. Um valor positivo indica um item popular (acima da média). É calculado para cada item $i$ como:
+
+\begin{equation}
+    \label{eq:calculo_bi}
+    b_i = \frac{\sum_{u \in U_i} (r_{u,i} - \mu)}{|U_i|},
+\end{equation}
+onde $U_i$ é o conjunto de usuários que avaliaram o item $i$.
+
+
+\paragraph{3. Viés do Usuário ($b_u$):}
+Representa o desvio médio do usuário $u$ em relação à média, após descontar o efeito da popularidade do item. Isso impede que um usuário pareça generoso apenas porque avaliou jogos muito populares. É calculado sobre o resíduo:
+
+\begin{equation}
+    \label{eq:calculo_bu}
+    b_u = \frac{\sum_{i \in I_u} (r_{u,i} - \mu - b_i)}{|I_u|},
+\end{equation}
+onde $I_u$ é o conjunto de itens avaliados pelo usuário $u$.
+
+\subsubsection{Vantagens do Modelo}
+
+A principal vantagem desta abordagem reside na sua eficiência computacional. Diferentemente de modelos de vizinhança que exigem cálculos quadráticos $O(m^2)$, o Modelo Baseline possui complexidade linear $O(N)$ em relação ao número de avaliações. Além disso, por possuir poucos parâmetros, o modelo é robusto contra \textit{overfitting}, servindo como um excelente \textit{benchmark} de precisão.
+
+
+\subsection{Sistemas Híbridos}\label{sec:sistemas_hibridos}
+
+Os Sistemas Híbridos combinam diferentes técnicas de recomendação para aproveitar os pontos fortes de cada abordagem e mitigar limitações.
+
+\subsubsection{Integração de Previsões}
+
+Sejam \(\hat{r}_{u,i}^{SR_1}\) e \(\hat{r}_{u,i}^{SR_2}\) as previsões de dois SRs distintos. Uma combinação linear simples desses dois modelos gera a previsão híbrida:
+
+\begin{equation}
+    \label{eq:previsao_hibrida}
+\hat{r}_{u,i}^{H} = \beta \hat{r}_{u,i}^{SR_1} + (1-\beta) \hat{r}_{u,i}^{SR_2},
+\end{equation}
+onde \(\beta \in [0,1]\) define a importância relativa de cada abordagem.
+
+
+
+\begin{comment}
+\subsection{Sistemas Baseados em Conhecimento}\label{sec:sistemas_baseados_em_conhecimento}
+
+Os Sistemas de Recomendação baseados em conhecimento \sigla{KBF}{\textit{Knowledge-Based Filtering}} utilizam informações explícitas sobre os requisitos do usuário e características dos itens, em vez de depender de histórico de interações. Essa abordagem é especialmente útil em cenários onde não há muitas avaliações disponíveis, como produtos de alto valor, raros ou de compra esporádica.
+
+\subsubsection{Representação Matemática}
+
+Seja um conjunto de usuários \(U\) e itens \(I\). Cada usuário \(u \in U\) define um conjunto de restrições ou preferências \(C_u\) sobre atributos dos itens, por exemplo:
+
+\begin{equation}
+    \label{eq:restricoes_usuario}
+C_u = \{c_1^u, c_2^u, \dots, c_d^u\},   
+\end{equation}
+onde \(c_j^u\) representa uma condição desejada sobre o atributo \(j\) do item. Cada item \(i \in I\) possui um vetor de atributos \(\mathbf{i} = [i_1, i_2, \dots, i_d]\).
+
+\subsubsection{Função de Adequação (Utility Function)}
+
+A recomendação é baseada em uma função de adequação (\emph{utility function}) que mede o quão bem um item satisfaz as restrições do usuário:
+
+\begin{equation}
+    \label{eq:funcao_adequacao}
+u(i,u) = f(\mathbf{i}, C_u)
+\end{equation}
+
+Um exemplo comum é a função de compatibilidade binária:
+
+\begin{equation}
+    \label{eq:funcao_compatibilidade}
+u(i,u) =
+\begin{cases}
+1, & \text{se } i_j \text{ satisfaz } c_j^u \text{ para todo } j=1,\dots,d \\
+0, & \text{caso contrário.}
+\end{cases}
+\end{equation}
+
+Em casos mais avançados, a função de adequação pode ser contínua, ponderando diferentes restrições:
+
+\begin{equation}
+    \label{eq:funcao_adequacao_continua}
+u(i,u) = \sum_{j=1}^{d} w_j \cdot g(i_j, c_j^u),
+\end{equation}
+onde \(g(i_j, c_j^u) \in [0,1]\) mede o grau de satisfação da restrição \(c_j^u\) pelo atributo \(i_j\), e \(w_j\) é o peso da restrição.
+
+\subsubsection{Recomendação}\label{sec:recomendacao}
+
+O sistema seleciona os itens que maximizam a função de adequação para o usuário:
+
+\begin{equation}
+    \label{eq:recomendacao}
+\hat{I}_u = \arg\max_{i \in I} u(i,u),
+\end{equation}
+
+Dessa forma, as recomendações são explicitamente alinhadas às necessidades e preferências declaradas do usuário, sem depender de avaliações históricas de outros usuários.
+
+\subsubsection{Vantagens}
+
+\begin{itemize}
+    \item Permite recomendações mesmo em situações de \emph{cold-start} de usuários e itens;  
+    \item Ideal para produtos complexos, caros ou personalizados;  
+    \item As recomendações são explicáveis, pois baseadas em restrições claras do usuário.
+\end{itemize}
+\end{comment}
+
+
+\section{Desafios Comuns em Sistemas de Recomendação}\label{sec:desafios_comuns_em_sistemas_de_recomendacao}
+
+O desempenho de um Sistema de Recomendação é fortemente dependente da qualidade, da estrutura e da quantidade dos dados disponíveis, e vários desafios podem surgir nesse contexto. A seguir, são discutidos alguns dos problemas mais comuns enfrentados por esses sistemas, bem como suas implicações e possíveis estratégias de mitigação.
+
+Um dos problemas mais recorrentes é a esparsidade dos dados. Em bases reais, o número de itens disponíveis tende a ser muito maior do que o número de avaliações ou interações observadas, produzindo uma matriz usuário–item $R \in \mathbb{R}^{m \times n}$ em que a fração de valores conhecidos é pequena:
+
+\begin{equation}
+    \label{eq:densidade_dados}
+\text{densidade}(R) = \frac{|\{(u,i)\,|\,r_{ui} \text{ observado}\}|}{m \times n} \ll 1.
+\end{equation}
+
+Essa característica dificulta a estimação de preferências não observadas, prejudicando a generalização dos modelos e aumentando a incerteza nas predições. Estratégias como fatoração matricial regularizada ou modelos probabilísticos latentes são comumente aplicadas para mitigar esse problema, impondo restrições de baixa dimensionalidade sobre as representações de usuários e itens.
+
+Outro desafio é o problema do novo usuário ou novo item, conhecido como \textit{cold start}. Nesse cenário, não há interações suficientes para inicializar o perfil de um novo elemento no sistema. No caso de um novo usuário, o vetor de preferências $\mathbf{p}_u$ é inicialmente indefinido; para um novo item, o vetor de características $\mathbf{q}_i$ não pode ser estimado a partir de avaliações históricas. Soluções típicas envolvem abordagens híbridas que incorporam atributos de conteúdo (como gênero, descrição textual ou metadados) para complementar a ausência de feedback explícito.
+
+Em contextos de larga escala, surge o problema da escalabilidade computacional. O crescimento exponencial do número de usuários ($m$) e de itens ($n$) impõe restrições severas à viabilidade de execução de algoritmos clássicos. Métodos baseados em vizinhança, por exemplo, exigem cálculos de similaridade $O(m^2)$ ou $O(n^2)$, tornando-se inviáveis para bases massivas. Mesmo modelos de fatoração matricial, cuja complexidade típica de treinamento é $O(kmn)$ para $k$ fatores latentes, podem tornar-se onerosos quando $m$ e $n$ alcançam a ordem de milhões. 
+
+Estratégias de mitigação incluem a adoção de técnicas de \textit{sampling} e decomposição incremental, além do uso de arquiteturas distribuídas de processamento, como \textit{MapReduce} ou \textit{parameter servers}. 
+
+A dinâmica temporal das preferências é outro aspecto crítico. As preferências dos usuários variam ao longo do tempo, de modo que um modelo estático $\hat{r}_{ui} = f(\mathbf{p}_u, \mathbf{q}_i)$ pode tornar-se obsoleto. Modelos temporais introduzem uma dependência explícita de tempo, $f_t(\mathbf{p}_{u,t}, \mathbf{q}_{i,t})$, ou incorporam esquemas de decaimento exponencial nas observações históricas, ponderando mais fortemente as interações recentes. Essa adaptação temporal é especialmente desafiadora em sistemas com fluxos contínuos de dados e milhões de transações diárias.
+
+
+\section{Algoritmos e Métricas em Sistemas de Recomendação}\label{sec:algoritmos_e_metricas_em_sistemas_de_recomendacao}
+
+Os Sistemas de Recomendação (SRs) empregam diferentes algoritmos para estimar o grau de similaridade entre usuários ou itens, etapa fundamental para gerar previsões e recomendações personalizadas. A escolha adequada da métrica influencia diretamente a precisão das recomendações e a eficiência computacional do sistema, especialmente diante dos desafios de esparsidade, heterogeneidade e escalabilidade dos dados.
+
+\subsection{Medidas de Similaridade}\label{sec:medidas_de_similaridade}
+
+As medidas de similaridade buscam quantificar o grau de proximidade entre vetores de características --- que podem representar perfis de usuários, itens ou interações entre ambos. Seja \( A, B \in \mathbb{R}^n \) dois vetores correspondentes às avaliações ou representações latentes de usuários ou itens. As métricas mais utilizadas incluem a \textit{similaridade do cosseno}, a \textit{distância euclidiana}, a \textit{correlação de Pearson} e o \textit{coeficiente de Jaccard}, cada qual adequada a diferentes tipos de dados e contextos de recomendação.
+
+\paragraph{Similaridade do Cosseno:}\label{sec:similaridade_do_cosseno}
+A similaridade do cosseno mede o ângulo entre dois vetores no espaço \( \mathbb{R}^n \), sendo uma métrica independente da magnitude, ideal para dados esparsos e avaliações normalizadas. É definida como:
+
+\begin{equation}
+    \label{eq:similaridade_cosseno} 
+\text{similaridade}_{\cos}(A,B) = \frac{A \cdot B}{\|A\|\|B\|} = \frac{\sum_{i=1}^{n} A_i B_i}{\sqrt{\sum_{i=1}^{n} A_i^2}\sqrt{\sum_{i=1}^{n} B_i^2}}\text{.}
+\end{equation}
+
+O valor resultante pertence ao intervalo \([-1, 1]\), onde \(1\) indica alinhamento perfeito (máxima similaridade), \(0\) ausência de correlação e \(-1\) oposição total.
+
+\begin{comment}
+\paragraph{Cosseno Ponderado:}\label{sec:cosseno_ponderado}
+Em contextos onde determinados atributos ou interações possuem importância diferenciada, pode-se introduzir um vetor de pesos \(w = [w_1, w_2, \dots, w_n]\), de modo que:
+
+\begin{equation}
+    \label{eq:similaridade_cosseno_ponderado}
+\text{similaridade}_{w\cos}(A,B) = \frac{\sum_{i=1}^{n} w_i A_i B_i}{\sqrt{\sum_{i=1}^{n} w_i A_i^2} \sqrt{\sum_{i=1}^{n} w_i B_i^2}}\text{.}
+\end{equation}
+
+Essa formulação confere maior flexibilidade ao modelo, permitindo personalizar a contribuição de cada dimensão da representação vetorial.
+\end{comment} 
+
+
+\paragraph{Distância Euclidiana:}\label{sec:distancia_euclidiana}
+A distância euclidiana mede a proximidade geométrica entre dois vetores e é expressa por:
+
+\begin{equation}
+    \label{eq:distancia_euclidiana}
+d(A,B) = \sqrt{\sum_{i=1}^{n} (A_i - B_i)^2}\text{.}
+\end{equation}
+
+Trata-se de uma métrica intuitiva, simétrica e não negativa. Entretanto, é sensível à escala e à magnitude dos dados, sendo menos robusta em contextos de alta esparsidade.
+
+\paragraph{Coeficiente de Correlação de Pearson:}\label{sec:coeficiente_de_correlacao_de_pearson}
+A correlação de Pearson avalia a relação linear entre dois vetores, removendo o efeito de diferenças de escala e de médias individuais. É amplamente empregada em filtragem colaborativa, principalmente quando as avaliações são normalizadas em torno da média do usuário:
+
+\begin{equation}
+    \label{eq:correlacao_pearson}
+r_{A,B} = \frac{\sum_{i=1}^{n} (A_i - \bar{A})(B_i - \bar{B})}{\sqrt{\sum_{i=1}^{n} (A_i - \bar{A})^2} \sqrt{\sum_{i=1}^{n} (B_i - \bar{B})^2}}\text{.}
+\end{equation}
+
+onde \( \bar{A} \) e \( \bar{B} \) representam as médias das avaliações de \(A\) e \(B\), respectivamente. Valores próximos de \(1\) indicam alta correlação positiva, enquanto valores próximos de \(-1\) indicam correlação inversa.
+
+\paragraph{Coeficiente de Jaccard:}\label{sec:coeficiente_de_jaccard}
+Quando as interações são binárias (por exemplo, presença ou ausência de uma compra, clique ou avaliação), utiliza-se o coeficiente de Jaccard, definido como:
+
+\begin{equation}
+    \label{eq:coeficiente_jaccard}
+J(A,B) = \frac{|A \cap B|}{|A \cup B|}.
+\end{equation}
+
+Essa métrica mede a proporção de itens compartilhados entre dois conjuntos, sendo ideal para bases implícitas ou altamente esparsas.
+
+% \paragraph{Discussão:}
+Cada métrica apresenta vantagens específicas. A similaridade do cosseno é eficiente e robusta para dados esparsos e vetores normalizados; a distância euclidiana é mais intuitiva, mas sensível à escala; a correlação de Pearson captura variações de preferência relativas, tornando-a mais interpretável em avaliações subjetivas; e o coeficiente de Jaccard é particularmente útil para sistemas com dados binários ou interações implícitas. Em ambientes de larga escala, a escolha da métrica deve considerar também o custo computacional, visto que o cálculo de similaridade entre milhões de vetores pode se tornar o principal gargalo de desempenho dos SRs.
+
+
+\section{Metodologia de Avaliação}
+
+A avaliação de sistemas de recomendação (SR) é uma etapa essencial para compreender a efetividade e a robustez dos algoritmos empregados. De acordo com \citeonline{aggarwal2016recommender}, os SR podem ser avaliados por meio de abordagens \textit{online} ou \textit{offline}, sendo esta última a mais utilizada em pesquisas devido à disponibilidade de conjuntos de dados históricos e à possibilidde de reproduções dos experimentos.
+
+
+\subsection{Avaliação Online e Offline}
+
+A distinção entre avaliação \textit{online} e \textit{offline} é fundamental, constituindo os dois paradigmas principais de análise de desempenho, conforme discutido por \citeonline{aggarwal2016recommender}.
+
+A avaliação online é conduzida em sistemas implantados e acessados por usuários reais, frequentemente utilizando testes do tipo \textit{A/B}. Seu objetivo é medir métricas operacionais e de comportamento, como a taxa de conversão (frequência com que um item recomendado é selecionado), engajamento, receita ou lucro. Trata-se do método mais fidedigno para aferir a eficácia do sistema a longo prazo, embora apresente custo elevado e dificuldade de controle experimental.
+
+Já a avaliação offline baseia-se em conjuntos de dados históricos que simulam o comportamento do usuário. Nessa abordagem, parte das avaliações conhecidas é ocultada, e o algoritmo é testado quanto à sua capacidade de prever os valores omitidos. É o método mais comum em pesquisas e competições (como o \textit{Netflix Prize}), permitindo testar a acurácia de diferentes algoritmos sob condições controladas e reprodutíveis.
+
+\subsection{Matriz de Avaliação e Divisão dos Dados}\label{sec:matriz_de_avaliacao_e_divisao_dos_dados}
+
+Para garantir uma avaliação imparcial, é essencial que as observações utilizadas no treinamento não sejam reaproveitadas na fase de teste.  
+Seja \( R \in \mathbb{R}^{m \times n} \) a matriz de avaliações, em que cada elemento \( r_{uj} \) representa a nota atribuída pelo usuário \(u\) ao item \(j\). O sistema gera uma estimativa \( \hat{r}_{uj} \), e a diferença entre valores reais e previstos define o erro:
+\begin{equation}
+    \label{eq:erro}
+e_{uj} = \hat{r}_{uj} - r_{uj}.
+\end{equation}
+
+Para evitar sobreajuste, o conjunto de entradas observadas \( S = \{(u,j) \mid r_{uj} \text{ conhecido}\} \) é dividido em:
+\begin{itemize}
+    \item \textbf{Treinamento}: usado para ajustar o modelo e aprender parâmetros latentes;
+    \item \textbf{Validação}: utilizado para ajuste de hiperparâmetros e seleção de modelos;
+    \item \textbf{Teste}: reservado exclusivamente para mensurar a acurácia final.
+\end{itemize}
+
+As principais estratégias de particionamento incluem o método \textit{Hold-Out}, em que uma fração dos dados é retida para teste, e a Validação Cruzada \textit{(Cross-Validation)}, na qual o conjunto de observações é dividido em \( q \) subconjuntos e a média de desempenho é calculada ao longo das iterações.
+
+\subsection{Métricas de Acurácia}\label{sec:metricas_de_acuracia}
+
+A acurácia constitui o critério mais fundamental de avaliação, sendo dividida conforme o objetivo do sistema: prever o valor exato de uma avaliação (\textit{rating prediction}) ou ordenar itens por relevância (\textit{ranking prediction}).
+
+\subsubsection{Métricas de predição.}\label{sec:metricas_de_predicao}
+Essas métricas medem o erro entre o valor previsto \( \hat{r}_{uj} \) e o valor real \( r_{uj} \). As mais utilizadas incluem:
+
+\begin{itemize}
+    \item \textbf{Erro Absoluto Médio (MAE):}
+    \begin{equation}
+        \label{eq:mae}  
+    MAE = \frac{1}{|E|} \sum_{(u,j) \in E} |r_{uj} - \hat{r}_{uj}|\text{.}
+    \end{equation}
+    É mais robusto a valores extremos, pois não amplifica grandes erros.
+
+    \item \textbf{Raiz do Erro Quadrático Médio (RMSE):}
+    \begin{equation}
+        \label{eq:rmse}
+    RMSE = \sqrt{\frac{1}{|E|} \sum_{(u,j) \in E} (r_{uj} - \hat{r}_{uj})^2}\text{.}
+    \end{equation}
+    Penaliza mais fortemente grandes discrepâncias, sendo a métrica oficial do \textit{Netflix Prize}.
+
+    %\item \textbf{Versões Normalizadas (NMAE, NRMSE):} obtidas dividindo o erro pela faixa de variação das notas \((r_{\max} - r_{\min})\), resultando em valores entre 0 e 1.
+\end{itemize}
+
+\paragraph{Métricas de ranqueamento.}\label{sec:metricas_de_ranqueamento}
+Quando o sistema gera listas ordenadas (\textit{Top-k Recommendation}), avalia-se a posição dos itens relevantes. Algumas dessas métricas são:
+
+\begin{itemize}
+    \item \textbf{Precisão a k (Precision@k):} Mede a fração de itens recomendados no topo da lista que são relevantes. É uma métrica de pureza da recomendação. Matematicamente:
+    \begin{equation}
+        \label{eq:precision_k}
+        P@k = \frac{|\{\text{itens relevantes}\} \cap \{\text{top-}k \text{ itens recomendados}\}|}{k}.
+    \end{equation}
+    Uma alta precisão indica que o usuário não precisa navegar por muitos itens ruins para encontrar um bom.
+
+    \item \textbf{Revocação a k (Recall@k):} Mede a fração de \textit{todos} os itens relevantes conhecidos do usuário que o sistema conseguiu incluir na lista dos top-$k$. É uma métrica de cobertura.
+    \begin{equation}
+        \label{eq:recall_k}
+        R@k = \frac{|\{\text{itens relevantes}\} \cap \{\text{top-}k \text{ itens recomendados}\}|}{|\{\text{total de itens relevantes do usuário}\}|}.
+    \end{equation}
+    Um alto recall indica que o sistema é capaz de encontrar a maioria dos jogos que o usuário gosta, evitando que boas opções passem despercebidas.
+\end{itemize}
+
+\section{Métricas Complementares}\label{sec:metricas_complementares}
+
+Embora a acurácia seja o critério operacional primário, ela não captura plenamente a qualidade percebida das recomendações. Segundo \citeonline{aggarwal2016recommender} algumas métricas complementares são necessárias para avaliar aspectos subjetivos da experiência do usuário, destacam-se:
+
+\begin{itemize}
+    \item \textbf{Novidade (Novelty):} mede a probabilidade de o sistema recomendar itens ainda não conhecidos pelo usuário, estimulando a descoberta de novos conteúdos.
+    \item \textbf{Serendipidade (Serendipity):} quantifica a frequência de recomendações inesperadas, mas relevantes, refletindo a capacidade do sistema de surpreender positivamente.
+    \item \textbf{Diversidade (Diversity):} avalia a variedade entre os itens recomendados, geralmente pela dissimilaridade média entre pares de itens na lista Top-k.
+    \item \textbf{Cobertura (Coverage):} indica a proporção de usuários ou itens para os quais o sistema consegue gerar recomendações válidas, podendo ser definida como cobertura de usuário ou de catálogo.
+    \item \textbf{Confiança (Confidence) e Confiança do Usuário (Trust):} a primeira reflete a incerteza do modelo em sua predição, enquanto a segunda refere-se à percepção subjetiva de credibilidade pelo usuário.
+    \item \textbf{Robustez e Estabilidade:} medem a capacidade do sistema em manter desempenho consistente frente a ruídos, mudanças temporais ou ataques intencionais (\textit{shilling attacks}).
+    \item \textbf{Escalabilidade:} avalia a eficiência computacional em termos de tempo de treinamento, tempo de predição e uso de memória, especialmente em contextos de grandes volumes de dados.
+\end{itemize}
+
+
+Algumas dessas métricas — como relevância, novidade, serendipidade e diversidade — já foram discutidas neste trabalho como objetivos secundários dos sistemas de recomendação, conforme apresentado na Seção \ref{sec:objetivos}. Na etapa de avaliação, esses mesmos conceitos podem ser quantificados por meio de diferentes abordagens métricas, permitindo analisar o quanto o sistema consegue gerar recomendações úteis, diversificadas e interessantes a longo prazo.
+
+Neste trabalho, essas métricas são apresentadas apenas de forma conceitual, já que o cálculo prático exigiria testes adicionais e maior capacidade computacional. Ainda assim, elas são importantes para mostrar que a qualidade de um sistema de recomendação vai além da simples precisão das previsões.
+
+
+% \section{Metodologia de Avaliação}
+% SRs podem ser avaliados por meio de dados offline e online. Segundo \cite{adomavicius2005toward}
+% na maior parte da literatura sobre sistemas de recomendação, a avaliação de desempenho dos algoritmos de recomendação é normalmente feita com base em métricas de cobertura e precisão.
+% A cobertura mede a porcentagem de itens para os quais um sistema de recomendação é capaz de fazer previsões. As métricas de precisão podem ser estatísticas ou de suporte à decisão.
+% As métricas estatíticas podem ser:
+% \begin{itemize}
+%     \item Acurácia (Accuracy): Mede a proporção de recomendações corretas.
+    
+%     \item Precisão (Precision): Qual a proporção de identificações positivas que foram realmente corretas entre os N itens recomendados.
+    
+%     \item Lembrança (Recall): Qual a fração de itens relevantes que foram recuperados entre os N itens recomendados.
+    
+%     \item F1-measure (F1-score): Média harmônica entre precisão e recall.
+    
+%     \item \sigla{MAP}{Mean Average Precision}: Avalia a precisão média de uma lista de recomendações para cada usuário e tira a média geral.
+    
+%     \item \sigla{MRR}{Mean Reciprocal Rank}: Mede a relevância da primeira ocorrência de uma recomendação relevante em uma lista, variando de 0 a 1.
+    
+%     \item \sigla{NDCG}{Normalized Discounted Cumulative Gain}: Leva em conta a posição dos itens recomendados.
+% \end{itemize}
+
+
+% Métodos baseados em \textit{diversidade}, \textit{novidade} e \textit{serendipidade} também são utilizados para medir aspectos qualitativos da recomendação, garantindo que o sistema não apenas repita padrões, mas também explore conteúdos novos ou inesperados ao usuário. A escolha adequada das métricas deve considerar o objetivo do sistema, o tipo de dados disponíveis e o contexto de aplicação.
+
+
+
+% \section{Aplicações}
+% SRs são amplamente aplicados em diversos domínios:
+% E-commerce: Recomendação de produtos em lojas online como Amazon.com, eBay.com, Taobao.com.
+% Serviços de Streaming: Filmes (Netflix), músicas (Last.fm, YouTube), vídeos.
+% E-learning: Sugestão de materiais didáticos (artigos científicos, apostilas, vídeos, áudios) em Ambientes Virtuais de Aprendizagem (AVAs) como Moodle e Classroom eXperience.
+% Outros Domínios: Notícias, redes sociais, saúde, turismo, publicidade, caminhos de carreira, e até mesmo adoção de animais. \cite{aggarwal2016recommender}
+
+    
+%\section{Trabalhos Futuros e Direções}
+%Pesquisas futuras em SRs buscam abordar:
+%Escalabilidade e desempenho em ambientes online: Lidar com grandes volumes de dados heterogêneos e não interconectados.
+%Otimização de algoritmos: Reduzir operações lógicas e aritméticas para melhorar a performance.
+%Modelagem de preferências dinâmicas: Adaptar-se às mudanças nas preferências do usuário ao longo do tempo.
+%Integração de conhecimento semântico: Explorar informações adicionais (ex: gênero, idade, confiança social, dados textuais/visuais) para enriquecer os modelos.
+%Recomendação de "slates" (listas) de itens: Em vez de um único item, recomendar um grupo ou sequência de itens.
+%Aprimoramento de AVAs: Desenvolver ferramentas para gerar mais feedbacks para docentes e tutores sobre o comportamento dos estudantes.
+%Melhoria na explicabilidade: Tornar o processo de recomendação mais transparente para o usuário.
+%Espero que esta revisão detalhada seja útil para sua pesquisa!
+
+% \section{Análise da Base de Dados}
+
+
+
+
+
+
+% Diante desses benefícios, torna-se pertinente o desenvolvimento de um algoritmo de recomendação de jogos de tabuleiro, capaz de indicar títulos personalizados com base nas preferências dos usuários. Tal ferramenta pode não apenas potencializar o engajamento dos jogadores, mas também ampliar o acesso a experiências lúdicas que promovam o aprendizado, o convívio e o desenvolvimento pessoal.
+

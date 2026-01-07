@@ -1,0 +1,20 @@
+%% Resumo.tex
+% ---
+% Resumo
+% ---
+\setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo		
+\begin{resumo}
+	\begin{flushleft} 
+			\setlength{\absparsep}{0pt} % ajusta o espaçamento da referência	
+			\SingleSpacing 
+			\imprimirautorabr~ ~\textbf{\imprimirtitulo}.	\imprimirdata. \pageref{LastPage}p. 
+			%Substitua p. por f. quando utilizar oneside em \documentclass
+			%\pageref{LastPage}f.
+			\imprimirtipotrabalho~-~\imprimirinstituicao, \imprimirlocal, \imprimirdata. 
+ 	\end{flushleft}
+\OnehalfSpacing 			
+Este trabalho analisa a aplicação de Sistemas de Recomendação no contexto de jogos de tabuleiro modernos, a partir de dados reais da plataforma \textit{BoardGameGeek}. São avaliadas diferentes abordagens, incluindo Filtragem Colaborativa, modelos Baseados em Conteúdo e modelos híbridos, com o objetivo de comparar seu desempenho preditivo e qualidade de ranqueamento. A metodologia envolve análise exploratória, construção da matriz usuário--item, ajuste de hiperparâmetros e avaliação por métricas de acurácia (RMSE e MAE) e de ranqueamento (Precision@k e Recall@k). Os resultados indicam que os modelos híbridos apresentam desempenho superior às abordagens individuais, destacando-se a combinação entre Filtragem Colaborativa e Baseada em Conteúdo, que oferece melhor equilíbrio entre precisão, qualidade das recomendações e mitigação do problema de \textit{cold-start}. Conclui-se que a integração de múltiplas fontes de informação é uma estratégia eficaz para Sistemas de Recomendação aplicados a jogos de tabuleiro modernos.
+ 
+
+ \textbf{Palavras-chave}: Sistemas de recomendação. Jogos de tabuleiro. Filtragem colaborativa. Método \textit{baseline}. Filtragem baseada em conteúdo. Modelos híbridos.
+\end{resumo}

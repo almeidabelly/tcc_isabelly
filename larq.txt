@@ -1,0 +1,165 @@
+ O volume na unidade C n∆o tem nome.
+ O N£mero de SÇrie do Volume Ç 361F-479E
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba
+
+07/01/2026  14:07    <DIR>          .
+26/12/2025  10:52    <DIR>          ..
+23/12/2025  09:47         1.467.537 analise_do_tcc.ipynb
+03/01/2026  16:34    <DIR>          bases
+07/01/2026  14:05    <DIR>          images
+07/01/2026  14:07               253 larq.txt
+07/01/2026  11:07               453 limpar_latex_temp.bat
+07/01/2026  13:49    <DIR>          old
+03/01/2026  16:35    <DIR>          old_analises
+26/12/2025  10:24            87.259 PaginaEmBranco.pdf
+03/01/2026  16:35    <DIR>          pesquisa
+07/01/2026  14:06    <DIR>          pos_tex
+07/01/2026  14:06    <DIR>          pre_tex
+03/01/2026  14:51    <DIR>          tex
+26/12/2025  13:17            17.333 USPSC-modelo-references.bib
+26/12/2025  11:35            15.091 USPSC-pre-textual-ICMC.tex
+07/01/2026  14:06         3.152.533 USPSC-TCC-modelo-ICMC.pdf
+07/01/2026  13:45            20.555 USPSC-TCC-modelo-ICMC.tex
+03/01/2026  14:23             4.413 USPSC-TCC-pre-textual-ICMC.tex
+26/12/2025  10:24             1.708 USPSC-unidades.tex
+26/12/2025  10:24            42.262 USPSC.cls
+              11 arquivo(s)      4.809.397 bytes
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba\bases
+
+03/01/2026  16:34    <DIR>          .
+07/01/2026  14:07    <DIR>          ..
+16/09/2025  10:41        73.851.622 artists_reduced.csv
+16/09/2025  10:41             3.278 bgg_data_documentation.txt
+16/09/2025  10:41        70.035.299 designers_reduced.csv
+16/09/2025  10:41                80 fonte.txt
+16/09/2025  10:41        22.141.390 games.csv
+16/09/2025  10:41         7.045.861 mechanics.csv
+16/09/2025  10:41        81.968.251 publishers_reduced.csv
+16/09/2025  10:41         8.691.368 ratings_distribution.csv
+16/09/2025  10:41           597.465 subcategories.csv
+16/09/2025  10:41         9.678.376 themes.csv
+16/09/2025  10:41       399.396.389 user_ratings.csv
+              11 arquivo(s)    673.409.379 bytes
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba\images
+
+07/01/2026  14:05    <DIR>          .
+07/01/2026  14:07    <DIR>          ..
+21/12/2025  17:37           129.852 bc_mae_k.png
+21/12/2025  17:37           133.459 bc_precision_k.png
+21/12/2025  17:37           119.690 bc_recall_k.png
+21/12/2025  17:37           131.136 bc_rmse_k.png
+23/12/2025  07:39           143.836 comparacao_modelos_acuracia.png
+22/12/2025  17:05           161.535 comparacao_modelos_boxplot.png
+23/12/2025  07:37           144.180 comparacao_modelos_ranking.png
+21/12/2025  14:05            99.454 dist_avaliacoes_jogo.png
+21/12/2025  14:05           110.011 dist_avaliacoes_usuario.png
+22/12/2025  10:12           110.122 fc_k_mae.png
+22/12/2025  10:12           140.815 fc_k_precision.png
+22/12/2025  10:12           111.989 fc_k_recall.png
+22/12/2025  10:12           114.702 fc_k_rmse.png
+23/12/2025  09:42            32.225 hist_notas.png
+21/12/2025  17:33           137.168 hybrid_mae_beta.png
+21/12/2025  17:33           123.019 hybrid_precision_beta.png
+21/12/2025  17:33           137.364 hybrid_recall_beta.png
+21/12/2025  17:33           119.847 hybrid_rmse_beta.png
+20/12/2025  18:47           231.395 k_sensitivity_ranking.png
+21/12/2025  14:23           590.342 scatter_pop_nota.png
+21/12/2025  14:24           110.667 scatter_pop_nota_log.png
+              21 arquivo(s)      3.132.808 bytes
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba\old
+
+07/01/2026  13:49    <DIR>          .
+07/01/2026  14:07    <DIR>          ..
+26/12/2025  10:24            73.783 EstruturaTrabalhoAcadeÃÇmico.jpg
+26/12/2025  10:24            72.972 fichacatalografica.pdf
+26/12/2025  10:24            64.448 folhadeaprovacao.pdf
+03/01/2026  16:45         3.152.455 isabellyalmeida_entregaIV.pdf
+26/12/2025  10:24           323.106 USPSC v2.0-Sobre.pdf
+26/12/2025  10:24            38.280 USPSC-AcentuacaoLaTeX.png
+26/12/2025  10:24             3.291 USPSC-Cap1-Introducao.tex
+26/12/2025  10:24            47.194 USPSC-Cap2-Desenvolvimento.tex
+26/12/2025  10:24            33.355 USPSC-Cap3-Citacoes.tex
+26/12/2025  11:20           114.679 USPSC-Cap4-Referencias.tex
+26/12/2025  10:24             1.848 USPSC-Cap5-Conclusao.tex
+26/12/2025  10:24           127.465 USPSC-EstruturaTrabAcad.jpg
+26/12/2025  10:24            63.003 USPSC-EstruturaTrabAcad.pdf
+26/12/2025  10:24            20.568 USPSC-LetrasGregas.png
+26/12/2025  10:24            31.319 USPSC-modelo-img-grafico.pdf
+26/12/2025  10:24           245.216 USPSC-modelo-img-marca.pdf
+26/12/2025  10:24         1.281.959 USPSC-modelo.pdf
+26/12/2025  10:24            17.440 USPSC-modelo.tex
+26/12/2025  10:24           856.660 USPSC-Siglas estabelecidas para os Programas de PoÃÅs-GraduacÃßaÃÉo por Unidade.xlsx
+26/12/2025  10:24             9.386 USPSC-SimbolosUteis.png
+26/12/2025  10:57         1.513.118 USPSC-TCC-modelo.pdf
+26/12/2025  10:24            16.807 USPSC-TCC-modelo.tex
+26/12/2025  10:24           398.438 USPSC-TCC-Siglas estabelecidas para as GraduacÃßoÃÉes por Unidade.xlsx
+26/12/2025  10:24           296.670 USPSC-v1.1-Sobre.pdf
+26/12/2025  10:24           386.019 USPSC-v1.2-Sobre.pdf
+26/12/2025  10:24            42.263 USPSC1.cls
+              26 arquivo(s)      9.231.742 bytes
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba\old_analises
+
+03/01/2026  16:35    <DIR>          .
+07/01/2026  14:07    <DIR>          ..
+28/09/2025  15:34           109.323 aggarwal.ipynb
+08/12/2025  14:29         1.696.174 analises.ipynb
+20/12/2025  15:32           606.856 analise_teste.ipynb
+28/10/2025  09:41            15.084 filtragem_bases.ipynb
+               4 arquivo(s)      2.427.437 bytes
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba\pesquisa
+
+03/01/2026  16:35    <DIR>          .
+07/01/2026  14:07    <DIR>          ..
+30/09/2025  09:04           774.568 cap_1_en.pdf
+05/10/2025  09:34         1.210.098 cap_1_ptbr.pdf
+30/09/2025  09:04         2.451.093 cap_2_4_en.pdf
+30/09/2025  09:04         5.238.521 cap_2_4_ptbr.pdf
+05/10/2025  09:34         2.440.656 cap_5_7_en.pdf
+05/10/2025  09:34         4.251.404 cap_5_7_ptbr.pdf
+               6 arquivo(s)     16.366.340 bytes
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba\pos_tex
+
+07/01/2026  14:06    <DIR>          .
+07/01/2026  14:07    <DIR>          ..
+26/12/2025  10:24             1.189 USPSC-Anexos.tex
+03/01/2026  16:30             1.852 USPSC-Apendices.tex
+               2 arquivo(s)          3.041 bytes
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba\pre_tex
+
+07/01/2026  14:06    <DIR>          .
+07/01/2026  14:07    <DIR>          ..
+26/12/2025  10:24            64.448 folhadeaprovacao.pdf
+03/01/2026  16:44             1.488 folhadeaprovacao.tex
+26/12/2025  10:24            87.259 PaginaEmBranco.pdf
+03/01/2026  15:02             1.742 USPSC-Abstract.tex
+03/01/2026  14:55             1.332 USPSC-Agradecimentos.tex
+03/01/2026  14:54               504 USPSC-Dedicatoria.tex
+26/12/2025  10:24             2.331 USPSC-fichacatalografica.tex
+26/12/2025  10:24               331 USPSC-IndicesRemissivos.tex
+26/12/2025  11:33             4.857 USPSC-pre-textual-OUTRO.tex
+03/01/2026  15:01             1.796 USPSC-Resumo.tex
+26/12/2025  10:24             1.525 USPSC-unidadesTCC.tex
+              11 arquivo(s)        167.613 bytes
+
+ Pasta de C:\Users\isabelly.almeida\OneDrive - FEDERACAO NACIONAL DAS EMP DE SEG PRIVADOS E DE CAPITALIZACAO\Notebook antigo CNseg\documentos\Python Scripts\modelo_mba\tex
+
+03/01/2026  14:51    <DIR>          .
+07/01/2026  14:07    <DIR>          ..
+26/12/2025  13:28            11.216 base_dados.tex
+03/01/2026  16:32             3.247 conclusao.tex
+03/01/2026  16:23            11.952 introducao.tex
+03/01/2026  16:23            47.830 metodologia.tex
+03/01/2026  16:06            47.495 parte_pratica.tex
+               5 arquivo(s)        121.740 bytes
+
+     Total de Arquivos na Lista:
+              97 arquivo(s)    709.669.497 bytes
+              26 pasta(s)   298.069.983.232 bytes dispon°veis

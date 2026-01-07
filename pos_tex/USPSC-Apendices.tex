@@ -1,0 +1,58 @@
+%% USPSC-Apendice.tex
+% ---
+% Inicia os apêndices
+% ---
+
+\begin{apendicesenv}
+% Imprime uma página indicando o início dos apêndices
+\partapendices
+\chapter{Métricas de desempenho dos modelos híbridos}
+\label{chapter:metricas_hibridos_beta}
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Métricas de desempenho dos modelos híbridos FC + BL e FC + BC para diferentes valores de $\beta$.}
+\label{tab:hybrid_beta_results}
+\begin{tabular}{c c S S S S}
+\toprule
+{$\beta$} & {Modelo} & {RMSE} & {MAE} & {P@10} & {R@10} \\
+\midrule
+0.0 & FC+BL & 1.1141 & 0.8352 & 0.8488 & 0.1721 \\
+    & FC+BC & 1.1865 & 0.8877 & 0.7917 & 0.1595 \\
+\addlinespace
+0.1 & FC+BL & 1.1091 & 0.8310 & 0.8522 & 0.1729 \\
+    & FC+BC & 1.1644 & 0.8696 & 0.8211 & 0.1660 \\
+\addlinespace
+0.2 & FC+BL & 1.1047 & 0.8273 & 0.8558 & 0.1739 \\
+    & FC+BC & 1.1448 & 0.8537 & 0.8444 & 0.1715 \\
+\addlinespace
+0.3 & FC+BL & 1.1009 & 0.8241 & 0.8593 & 0.1749 \\
+    & FC+BC & 1.1278 & 0.8402 & 0.8593 & 0.1750 \\
+\addlinespace
+0.4 & FC+BL & 1.0977 & 0.8215 & 0.8622 & 0.1757 \\
+    & FC+BC & 1.1136 & 0.8291 & 0.8687 & 0.1775 \\
+\addlinespace
+0.5 & FC+BL & 1.0952 & 0.8195 & 0.8648 & 0.1764 \\
+    & FC+BC & 1.1023 & 0.8205 & 0.8740 & 0.1790 \\
+\addlinespace
+0.6 & FC+BL & 1.0932 & 0.8180 & 0.8667 & 0.1769 \\
+    & FC+BC & 1.0940 & 0.8146 & 0.8753 & 0.1795 \\
+\addlinespace
+0.7 & FC+BL & 1.0918 & 0.8171 & 0.8677 & 0.1772 \\
+    & FC+BC & 1.0888 & 0.8113 & 0.8754 & 0.1796 \\
+\addlinespace
+0.8 & FC+BL & 1.0911 & 0.8168 & 0.8689 & 0.1776 \\
+    & FC+BC & 1.0866 & 0.8108 & 0.8736 & 0.1790 \\
+\addlinespace
+0.9 & FC+BL & 1.0910 & 0.8171 & 0.8692 & 0.1777 \\
+    & FC+BC & 1.0875 & 0.8130 & 0.8715 & 0.1783 \\
+\addlinespace
+1.0 & FC+BL & 1.0915 & 0.8179 & 0.8700 & 0.1780 \\
+    & FC+BC & 1.0915 & 0.8179 & 0.8700 & 0.1780 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\end{apendicesenv}

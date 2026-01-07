@@ -1,0 +1,629 @@
+\section{Implementação e Análise Prática} \label{sec:parte_pratica}
+
+Neste capítulo, será apresentada a aplicação prática dos conceitos discutidos anteriormente em \ref{chapter:metodologia}. O objetivo principal é desenvolver e validar quatro algoritmos de recomendação distintos para jogos de tabuleiro modernos, avaliando sua precisão preditiva e eficiência na geração de listas de sugestões personalizadas. 
+
+A abordagem prática divide-se em três etapas fundamentais: primeiramente, o tratamento exploratório e a amostragem estratégica dos dados brutos; em seguida, a parametrização e o cálculo dos modelos de vizinhança e viés; e, por fim, a análise comparativa de desempenho através de métricas de acurácia (RMSE e MAE) e de ranqueamento (Precision e Recall). Através desta metodologia, busca-se identificar qual dos modelos propostos oferece uma melhor experiência de recomendação. 
+
+Foram implementados os seguintes modelos:
+\begin{itemize}
+    \item \textbf{Filtragem Colaborativa (FC) - User-User:} a similaridade foi calculada usando a Correlação de Pearson que escolhida por sua capacidade computacionalmente eficiente de capturar relações lineares entre usuários, ajustando-se bem às variações individuais de escala nas avaliações.
+    \item \textbf{Filtragem Baseada em Conteúdo (BC) - Item-Item}:
+    neste modelo, foi escolhida a similaridade utilizando a Distância de Jaccard uma vez que ela é particularmente eficaz para medir a similaridade entre conjuntos binários, como os vetores binários de mecânicas de jogo, permitindo identificar jogos com características semelhantes.
+    \item \textbf{Modelo Baseline - Viés Global, de Item e de Usuário:} este é um modelo de facil implementação que permite capturar os vieses inerentes aos usuários e itens, proporcionando uma linha de base sólida para comparação.
+    \item \textbf{Modelo Híbrido - Combinação Linear Ponderada entre dois Modelos:} esta implementação visou aproveitar as forças de dois os modelos e foi implementado com a finalidade de mitigar as limitações individuais de cada abordagem, especialmente em cenários de \textit{cold-start}, além da tentativa de melhorar a precisão geral das recomendações.
+\end{itemize}
+
+\section{Análise Exploratória e Pré-processamento dos Dados}\label{sec:analise_exploratoria}
+
+Para a implementação do Sistema de Recomendação, foram utilizados três conjuntos de dados principais extraídos da plataforma BoardGameGeek (BGG): \texttt{user\_ratings.csv} (notas dos usuários para determinados jogos), \texttt{games.csv} (metadados dos jogos) e \texttt{mechanics.csv} (atributos de conteúdo). 
+
+O volume original dos dados brutos (aproximadamente 380 MB no arquivo de avaliações) impõe desafios de memória e custo computacional para operações iterativas de modelagem. Desta forma, antes da aplicação dos algoritmos, os dados foram submetidos a um \textit{pipeline} de pré-processamento composto por etapas de limpeza, filtragem temporal e redução de dimensionalidade, visando garantir tanto a viabilidade computacional quanto a relevância das recomendações.
+
+\subsection{Filtragem Temporal e Limpeza dos Dados}
+
+% A primeira etapa consistiu na definição do escopo temporal e no tratamento de duplicatas. 
+
+No âmbito da filtragem temporal, optou-se por manter apenas jogos publicados a partir de 1990 (\textit{Modern Board Games}). Esta decisão concentra a análise nos ditos jogos modernos de tabuleiro.
+
+Em seguida, observou-se a presença de múltiplas avaliações para um mesmo par usuário-item na base bruta. Para resolver essa inconsistência, os dados foram agrupados por usuário e jogo, calculando-se a média das notas atribuídas, garantindo assim a unicidade nas entradas da futura matriz de utilidade.
+
+\vspace{0.8em}
+\vspace{0.8em}
+
+
+\begin{quadro}[H]
+\centering
+\caption{Filtragem temporal e consolidação das avaliações}
+\label{quadro:filtragem_temporal}
+\begin{tabular}{p{0.95\textwidth}}
+\hline
+\texttt{\# Filtragem para manter apenas jogos lançados a partir de 1990} \\[0.3em]
+\texttt{games\_modern = games[games['YearPublished'] >= 1990]} \\[0.6em]
+\\
+\texttt{\# Consolidação de notas duplicadas (média por usuário/jogo)} \\[0.3em]
+\texttt{ratings = ratings.groupby(['Username', 'BGGId'], as\_index=False)['Rating'].mean()} \\
+
+\hline
+\end{tabular}
+\end{quadro}
+
+\vspace{0.8em}
+
+
+\subsection{Estratégia de Amostragem Densa}
+
+Dada a esparsidade da base original, foi necessária uma estratégia robusta de redução de dimensionalidade para viabilizar o cálculo das matrizes de similaridade. Em vez de uma amostragem aleatória simples, que poderia agravar a esparsidade, optou-se por uma abordagem de \textit{Dense Sampling} (Amostragem Densa).
+
+Esta técnica consiste em selecionar o subnúcleo mais ativo da plataforma, maximizando a densidade de interações:
+
+\vspace{0.8em}
+
+\begin{itemize}
+    \item \textbf{Seleção de Usuários:} Foram mantidos os 5.000 usuários com maior número de avaliações registradas.
+    \item \textbf{Seleção de Itens:} Dentre os jogos avaliados por esses usuários, foram mantidos os 2.000 jogos mais populares (maior volume de notas).
+\end{itemize}
+
+\begin{quadro}[H]
+\centering
+\caption{Aplicação do Dense Sampling}
+\label{quadro:dense_sampling}
+\begin{tabular}{p{0.95\textwidth}}
+\hline
+\texttt{\# Selecionar os top 5.000 usuarios mais ativos} \\[0.3em]
+\texttt{top\_users = ratings['Username'].value\_counts().nlargest(5000).index} \\[0.3em]
+\texttt{ratings = ratings[ratings['Username'].isin(top\_users)]} \\[0.6em]
+\\
+\texttt{\# Selecionar os top 2.000 jogos mais populares neste subgrupo} \\[0.3em]
+\texttt{top\_games = ratings['BGGId'].value\_counts().nlargest(2000).index} \\[0.3em]
+\texttt{ratings = ratings[ratings['BGGId'].isin(top\_games)]} \\
+
+\hline
+\end{tabular}
+\end{quadro}
+
+\vspace{0.8em}
+
+
+Após o cruzamento dessas restrições, a base final de trabalho resultou em 2.217.792 avaliações observadas. A densidade resultante desta amostra é significativamente superior aos padrões de bases esparsas de sistemas de recomendação, favorecendo a convergência dos algoritmos.
+
+\subsection{Análise Exploratória do Conjunto de Dados}\label{sec:eda_graficos}
+
+Foram gerados gráficos e estatísticas descritivas com o objetivo de compreender melhor a distribuição das variáveis após o pré-processamento. A Figura~\ref{fig:distribuicao_notas} apresenta o histograma das notas atribuídas pelos usuários aos jogos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/hist_notas.png}
+    \caption{Distribuição das Notas Atribuídas pelos Usuários}
+    \label{fig:distribuicao_notas}
+\end{figure}
+
+Observa-se que a distribuição das avaliações é fortemente concentrada em valores elevados, principalmente no intervalo entre 6 e 8 refletindo o viés de positividade durante o processo de avaliação, no qual os usuários tendem a avaliar predominantemente jogos que apreciam.
+
+A distribuição das notas mostra ainda que os usuários tendem a avaliar os jogos de forma predominantemente discreta ou, em menor porporção, com incrementos de 0,5 ponto indicando que as notas representam preferências subjetivas, e não uma escala contínua precisa. Isto implica dizer que pequenas diferenças numéricas entre notas previstas e reais podem não ser perceptíveis para o usuário no momento da recomendação. Essa condição reforça a necessidade de utilizar métricas complementares às de erro absoluto, como métricas de ranqueamento, uma vez que pequenas diferenças numéricas entre notas podem não representar diferenças relevantes na percepção real dos usuários.
+
+As estatísticas descritivas corroboram essa observação: a média das notas é igual a $6,93$, enquanto a mediana é $7,00$, indicando uma distribuição centrada em valores altos. A assimetria negativa moderada ($-0,53$) revela a presença de uma cauda mais longa à esquerda, evidenciando que avaliações muito baixas são menos frequentes. Além disso, a curtose positiva ($0,98$) indica uma maior concentração de observações em torno da média quando comparada a uma distribuição normal.
+
+Essa característica da distribuição possui implicações diretas para os modelos de recomendação utilizados neste trabalho. A concentração das notas em torno da média global pode favorecer modelos baseados em vieses, como o Modelo Baseline visto em \ref{sec:modelo_baseline}, e pode dificultar a obtenção de grandes ganhos absolutos em métricas de erro, como RMSE e MAE. Por esse motivo, métricas de ranking, como \textit{Precision@K} e \textit{Recall@K}, são fundamentais para uma avaliação mais adequada da qualidade das recomendações.
+
+A Figura~\ref{fig:dist_avaliacoes_usuario} apresenta a distribuição do número de avaliações realizadas por usuário. Observa-se que a maioria dos usuários possui um volume moderado de avaliações, concentrando-se entre aproximadamente 200 e 600 registros. Entretanto, nota-se a presença de uma cauda longa à direita, indicando a existência de usuários extremamente ativos, responsáveis por um grande número de avaliações.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{images/dist_avaliacoes_usuario.png}
+    \caption{Distribuição de Avaliações por Usuário e por Jogo (Cauda Longa)}
+    \label{fig:dist_avaliacoes_usuario}
+\end{figure}
+
+Esse comportamento revela uma distribuição assimétrica à direita e evidencia a heterogeneidade no engajamento dos usuários. Tal característica pode impactar diretamente nos modelos de Filtragem Colaborativa baseados em usuários, uma vez que usuários com poucas avaliações tendem a gerar estimativas de similaridade menos estáveis, enquanto usuários mais ativos contribuem para perfis mais robustos.
+
+A Figura~\ref{fig:dist_avaliacoes_jogo} apresenta a distribuição do número de avaliações por jogo. Observa-se um padrão típico de sistemas de recomendação reais, caracterizado por uma forte concentração de jogos com poucas avaliações e uma cauda longa à direita, representando um pequeno conjunto de jogos altamente populares. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{images/dist_avaliacoes_jogo.png}
+    \caption{Distribuição de Avaliações por Usuário e por Jogo (Cauda Longa)}
+    \label{fig:dist_avaliacoes_jogo}
+\end{figure}
+
+Essas características reforçam a natureza altamente esparsa da matriz usuário--item e justificam a adoção de estratégias complementares, como modelos Baseados em Conteúdo e abordagens híbridas, capazes de mitigar os efeitos do \textit{cold-start} e da concentração de popularidade.
+
+A Figura~\ref{fig:scatter_pop_nota} apresenta a relação entre a popularidade dos jogos, medida pelo número de avaliações recebidas, e a respectiva nota média. No gráfico em escala linear, observa-se elevada concentração de pontos na região de baixa popularidade, reflexo do fenômeno de cauda longa visto anteriormente.
+
+Para uma análise mais informativa, a Figura~\ref{fig:scatter_pop_nota_log} apresenta a mesma relação utilizando escala logarítmica no eixo da popularidade. Essa representação evidencia que jogos com poucas avaliações apresentam elevada variabilidade na nota média, enquanto jogos mais populares tendem a apresentar estimativas mais estáveis, com valores concentrados em torno da média global.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/scatter_pop_nota.png}
+    \caption{Relação entre Popularidade e Nota Média dos Jogos}
+    \label{fig:scatter_pop_nota}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/scatter_pop_nota_log.png}
+    \caption{Relação entre Popularidade (Escala Logarítmica) e Nota Média dos Jogos}
+    \label{fig:scatter_pop_nota_log}
+\end{figure}
+
+A correlação entre popularidade e nota média é positiva, porém fraca, com coeficientes de Pearson igual a $0,28$ e Spearman igual a $0,25$. A proximidade entre essas medidas indica a ausência de uma relação linear forte, sugerindo que a popularidade, por si só, não é um fator determinante da avaliação média dos jogos.
+
+Esses resultados evidenciam um fenômeno de regressão à média, no qual o aumento do número de avaliações reduz a variabilidade da nota média. Tal característica possui implicações diretas para os modelos de recomendação avaliados neste trabalho, reforçando a importância de abordagens que combinem informações colaborativas e baseadas em conteúdo, bem como o uso de métricas de ranking para uma avaliação mais adequada da qualidade das recomendações.
+
+
+\section{Definição da Matriz de Avaliações R}
+
+Após as etapas de filtragem e amostragem, os dados foram estruturados na matriz de avaliações \( R \), fundamental para os modelos de recomendação. Define-se \( R \in \mathbb{R}^{m \times n} \), onde \( m=5.000 \) (usuários) e \( n=2.000 \) (jogos), tal que:
+
+\begin{equation}
+    \label{eq:matriz_r}
+R = [r_{uj}], \quad
+r_{uj} =
+\begin{cases}
+\text{nota atribuída pelo usuário } u \text{ ao jogo } j, & \text{se observada;} \\
+0, & \text{caso contrário.}
+\end{cases}
+\end{equation}
+
+Esta matriz serve como entrada principal para os cálculos de similaridade (Pearson e Cosseno) e para a decomposição em fatores latentes nos capítulos subsequentes.
+
+
+\section{Estratégia de Divisão dos Dados para Treinamento e Teste}\label{sec:divisao_dados}
+
+A divisão dos dados para treinamento e teste foi realizada de forma estratificada por usuário, e não por uma divisão aleatória global (\textit{global shuffle}). A abordagem foi escolhida afim de evitar o vazamento de dados (\textit{data leakage}) e garantir que o teste simule um cenário real de recomendação.
+
+O processo de divisão seguiu as seguintes regras:
+\begin{enumerate}
+    \item \textbf{Separação por Usuário:} Para cada usuário, 20\% de suas avaliações foram separadas para o conjunto de teste e 80\% mantidas no conjunto de treino.
+    \item \textbf{Critério de Histórico Mínimo:} Apenas usuários com mais de 5 avaliações na base final tiveram dados movidos para o conjunto de teste. Usuários com 5 ou menos interações foram mantidos integralmente no treino ou descartados do teste, visto que a remoção de dados poderia inviabilizar o cálculo de similaridade ou a própria validação (problema de \textit{cold-start} no teste).
+\end{enumerate}
+
+Essa estratégia garante que, no momento da validação, o modelo tenha acesso a um histórico parcial do usuário no treino (os 80\%) para inferir suas preferências e tentar prever as interações ocultas (os 20\% do teste).
+
+
+\section{Treinamento e Parametrização dos Modelos}\label{sec:treinamento_modelos}
+
+A fase de treinamento consistiu no pré-cálculo das matrizes de similaridade e na estimativa dos parâmetros de viés (\textit{model fitting}). Os métodos implementados utilizam aprendizado baseado em memória e heurísticas estatísticas, onde o modelo treinado é representado pelas estruturas de dados resultantes descritas abaixo.
+
+\subsection{Treinamento da Filtragem Colaborativa (FC)}\label{treino_fc}
+
+Para o modelo de Filtragem Colaborativa (abordagem User-User), conforme visto na \ref{sec:fc_user_user}, o treinamento focou na identificação de padrões de vizinhança entre os usuários com base em seus históricos de avaliação compartilhados.
+
+Foi gerada uma matriz densa e simétrica de dimensões $5.000 \times 5.000$, onde cada célula $(u, v)$ armazena o coeficiente de correlação de Pearson descrito em \ref{eq:correlacao_pearson}, a medida foi usada para quantificar a similaridade entre o usuário $u$ e o usuário $v$. Esta etapa incorreu em um custo computacional significativo, dada a complexidade quadrática em relação ao número de usuários.
+
+Para esta abordagem, buscou-se identificar o melhor valor de $k$ (número de vizinhos mais próximos) através de experimentação empírica. O número de vizinhos testados foram $k = \{10, 20, 30, 40, 50, 60, 80, 100\}$ e, após testes, foram contabilizadas métricas de acurácia (RMSE, MAE) e ranking (Precision@K e Recall@K) no conjunto de teste. 
+
+Ao final desses testes, obteve-se os seguinte resultados resumidos na Tabela \ref{tab:fc_k_sensitivity} a seguir:
+
+
+\begin{table}[H]
+    \centering
+    \caption{Resumo das métricas de desempenho do modelo FC User--User para diferentes valores de $k$.}
+    \label{tab:fc_k_sensitivity}
+    \begin{tabular}{ccccc}
+        \hline
+        \textbf{Número de Vizinhos ($k$)} & \textbf{RMSE} & \textbf{MAE} & \textbf{Precision@10} & \textbf{Recall@10} \\
+        \hline
+        10  & 1,1225 & 0,8451 & 0,8509 & 0,1727 \\
+        20  & 1,1024 & 0,8275 & 0,8631 & 0,1762 \\
+        30  & 1,0959 & 0,8220 & 0,8662 & 0,1769 \\
+        40  & 1,0931 & 0,8195 & 0,8682 & 0,1775 \\
+        50  & 1,0916 & 0,8181 & 0,8700 & 0,1780 \\
+        60  & 1,0907 & 0,8173 & 0,8699 & 0,1779 \\
+        80  & 1,0898 & 0,8163 & 0,8706 & 0,1781 \\
+        100 & 1,0895 & 0,8159 & 0,8709 & 0,1781 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+A Figura \ref{fig:fc_k_sensitivity_accuracy} ilustra a sensibilidade das métricas RMSE e MAE em relação ao valor de $k$. Já a Figura \ref{fig:fc_k_sensitivity_ranking} apresenta a variação das métricas de ranking (Precision@10 e Recall@10) conforme o valor de $k$.
+
+
+\begin{figure}[H]
+    \centering
+    \caption{Sensibilidade do hiperparâmetro $k$ — Métricas de acurácia do modelo FC User--User.}
+    \label{fig:fc_k_sensitivity_accuracy}
+
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/fc_k_rmse.png}
+        \caption*{(a) RMSE em função de $k$.}
+        \label{fig:fc_k_rmse}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/fc_k_mae.png}
+        \caption*{(b) MAE em função de $k$.}
+        \label{fig:fc_k_mae}
+    \end{minipage}
+\end{figure}
+
+
+\begin{figure}[htbp]
+    \centering
+    \caption{Sensibilidade do hiperparâmetro $k$ — Métricas de ranking do modelo FC User--User.}
+    \label{fig:fc_k_sensitivity_ranking}
+
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/fc_k_precision.png}
+        \caption*{(a) Precision@10 em função de $k$.}
+        \label{fig:fc_k_precision}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/fc_k_recall.png}
+        \caption*{(b) Recall@10 em função de $k$.}
+        \label{fig:fc_k_recall}
+    \end{minipage}
+\end{figure}
+
+
+A análise de sensibilidade do hiperparâmetro $k$, apresentada nas Figuras \ref{fig:fc_k_sensitivity_accuracy} e \ref{fig:fc_k_sensitivity_ranking}, indica que o desempenho do modelo melhora significativamente para valores iniciais de $k$, especialmente até $k = 50$. A partir desse ponto, observa-se um regime de saturação, no qual os ganhos em termos de RMSE e MAE tornam-se marginais.
+
+Em relação às métricas de ranking, nota-se que tanto a Precision@10 quanto o Recall@10 apresentam crescimento consistente até aproximadamente $k = 50$, estabilizando-se para valores superiores. Esse comportamento sugere que a inclusão de vizinhos adicionais além desse limiar tende a incorporar usuários com menor similaridade, contribuindo pouco para a qualidade das recomendações e potencialmente introduzindo ruído.
+
+Considerando conjuntamente o desempenho preditivo, a estabilidade das métricas de ranking e o custo computacional associado ao aumento do número de vizinhos, adotou-se $k = 50$ como valor final para o modelo FC User--User, representando um compromisso adequado entre acurácia, robustez e eficiência computacional.
+
+
+\subsection{Treinamento da Filtragem Baseada em Conteúdo (BC)}
+
+O modelo Baseado em Conteúdo (abordagem Item-Item) foi construído utilizando os atributos descritivos dos jogos, isto é, as mecânicas presentes em cada jogo descritas no arquivo \texttt{mechanics.csv}.
+
+Diferente da FC, a similaridade aqui é estática e baseada em metadados. Utilizou-se a distância de Jaccard conforme visto na Seção \ref{sec:coeficiente_de_jaccard} sobre os vetores binários de mecânicas para gerar uma matriz de dimensões $2.000 \times 2.000$.
+
+Assim como na abordagem FC, o valor de $k$ (número de vizinhos mais próximos) foi determinado através de experimentação empírica. Foram testados os mesmos valores de $k = \{10, 20, 30, 40, 50, 60, 80, 100\}$ e as métricas de desempenho foram avaliadas no conjunto de teste.
+
+A Tabela \ref{tab:bc_k_sensitivity} resume os resultados obtidos:
+
+\begin{table}[H]
+    \centering
+    \caption{Resumo das métricas de desempenho do modelo BC para diferentes valores de $k$.}
+    \label{tab:bc_k_sensitivity}
+    \begin{tabular}{ccccc}
+        \hline
+        \textbf{Número de Vizinhos ($k$)} & \textbf{RMSE} & \textbf{MAE} & \textbf{Precision@10} & \textbf{Recall@10} \\
+        \hline
+        10  & 1,2051 & 0,9034 & 0,7810 & 0,1575 \\
+        20  & 1,1891 & 0,8903 & 0,7898 & 0,1592 \\  
+        30  & 1,1865 & 0,8877 & 0,7917 & 0,1595 \\
+        40  & 1,1871 & 0,8878 & 0,7924 & 0,1595 \\
+        50  & 1,1885 & 0,8887 & 0,7919 & 0,1593 \\
+        60  & 1,1899 & 0,8896 & 0,7913 & 0,1594 \\
+        80  & 1,1925 & 0,8915 & 0,7920 & 0,1597 \\
+        100 & 1,1949 & 0,8932 & 0,7899 & 0,1593 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+Seguindo a mesma lógica adotada na FC, as Figuras \ref{fig:bc_k_accuracy} e \ref{fig:bc_k_ranking} ilustram a sensibilidade das métricas RMSE, MAE, Precision@10 e Recall@10 em relação aos valores de $k$ testados.
+
+A análise de sensibilidade do hiperparâmetro $k$ para o modelo BC, apresentada nas Figuras \ref{fig:bc_k_accuracy} e \ref{fig:bc_k_ranking}, evidencia a existência de um ponto ótimo bem definido em torno de $k = 30$. Observa-se uma redução significativa das métricas de erro (RMSE e MAE) até esse valor, seguida por um aumento gradual do erro para valores superiores de $k$.
+
+\begin{figure}[H]
+    \centering
+    \caption{Análise de sensibilidade do hiperparâmetro $k$ para o modelo BC Item--Item considerando métricas de acurácia.}
+    \label{fig:bc_k_accuracy}
+
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/bc_rmse_k.png}
+        \caption*{(a) RMSE em função de $k$.}
+        \label{fig:bc_rmse_k}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/bc_mae_k.png}
+        \caption*{(b) MAE em função de $k$.}
+        \label{fig:bc_mae_k}
+    \end{minipage}
+\end{figure}
+
+
+
+\begin{figure}[H]
+    \centering
+    \caption{Análise de sensibilidade do hiperparâmetro $k$ para o modelo BC Item--Item considerando métricas de ranking.}
+    \label{fig:bc_k_ranking}
+
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/bc_precision_k.png}
+        \caption*{(a) Precision@10 em função de $k$.}
+        \label{fig:bc_precision_k}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/bc_recall_k.png}
+        \caption*{(b) Recall@10 em função de $k$.}
+        \label{fig:bc_recall_k}
+    \end{minipage}
+\end{figure}
+
+
+Em relação às métricas de ranking, tanto a Precision@10 quanto o Recall@10 apresentam melhora até aproximadamente $k = 30$, tornando-se instáveis ou apresentando ganhos marginais para valores mais elevados. Esse comportamento sugere que a inclusão de um número excessivo de itens vizinhos tende a incorporar jogos semanticamente menos relacionados, introduzindo ruído no processo de recomendação.
+
+Dessa forma, considerando o desempenho preditivo, a estabilidade das métricas de ranking e o custo computacional, adotou-se $k = 30$ como valor final para o modelo BC, representando um compromisso adequado entre qualidade das recomendações e eficiência computacional.
+
+% Assim como na FC, aplicou-se um corte de $k=30$ vizinhos mais próximos. Neste contexto, isso significa que a nota prevista para um jogo é baseada na média ponderada das notas que o usuário deu para os 30 jogos mecanicamente mais parecidos com o jogo alvo. A previsão foi calculada conforme a equação \ref{eq:previsao_conteudo_knn} apresentada na Seção \ref{sec:sistemas_bc}.
+
+
+\subsection{Treinamento do Modelo Baseline}
+
+O Modelo Baseline foi treinado através de uma decomposição sequencial das médias para isolar os vieses globais, de item e de usuário. Os parâmetros aprendidos a partir do conjunto de treino foram:
+
+\begin{enumerate}
+    \item \textbf{Média Global ($\mu$):} O valor base calculado sobre todas as interações de treino foi $\mu \approx 6,93$, servindo como ponto de partida para todas as previsões.
+    \item \textbf{Viés do Item ($b_i$):} Para cada um dos 2.000 itens, calculou-se o desvio médio em relação a $\mu$. Itens populares receberam vieses positivos, enquanto itens com recepção mista receberam vieses negativos.
+    \item \textbf{Viés do Usuário ($b_u$):} Para cada um dos 5.000 usuários, calculou-se o desvio médio dos resíduos. Esta etapa final captura a tendência individual (indulgência ou rigor) após descontar a qualidade intrínseca dos jogos avaliados.
+\end{enumerate}
+
+
+\section{Estratégia de Integração: O Modelo Híbrido}
+
+A implementação de um Modelo Híbrido não constitui uma escolha arbitrária, mas resulta da análise das limitações observadas nos modelos individuais avalaiados até o momento.
+
+A análise exploratória dos dados feitas na Seção \ref{sec:eda_graficos} evidenciou características como a forte assimetria na distribuição das avaliações, a presença do fenômeno de cauda longa e a concentração das notas em torno de valores elevados. Esses aspectos podem impactar o desempenho dos modelos, especialmente em cenários de esparsidade e \textit{cold-start}.
+
+A Tabela \ref{tab:resumo_resultados} apresenta um comparativo de desempenho entre os modelos individuais implementados, evidenciando que cada abordagem possui pontos fortes e limitações específicas.
+
+\begin{table}[H]
+    \centering
+    \caption{Comparativo de desempenho dos modelos avaliados}
+    \label{tab:resumo_resultados}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Modelo} & \textbf{RMSE} & \textbf{MAE} & \textbf{P@10} & \textbf{R@10} \\
+        \midrule
+        FC User--User (Pearson)       & 1,0895 & 0,8159 & 0,8709 & 0,1781 \\
+        Baseline ($\mu + b_u + b_i$)  & 1,1141 & 0,8352 & 0,8489 & 0,1721 \\
+        BC Item--Item (Jaccard)       & 1,1865 & 0,8877 & 0,7917 & 0,1595 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+A partir desses resultados, é possivel destacar as seguintes observações:
+
+\begin{itemize}
+    \item A \textbf{Filtragem Colaborativa (FC) usuário--usuário} apresentou desempenho competitivo em termos de RMSE quando comparada aos demais modelos, indicando boa capacidade preditiva quando há histórico suficiente de interações. Entretanto, por depender exclusivamente de avaliações passadas, o modelo torna-se inadequado em contextos com dados históricos insuficientes, nos quais novos usuários não dispõem de informação suficiente para o cálculo de similaridades confiáveis.
+    
+    \item O \textbf{Modelo Baseline}, fundamentado na média global e nos vieses de usuários e itens, este modelo demonstrou desempenho robusto em termos de erro médio, uma vez que se beneficia da concentração das notas em torno da média global. Ainda assim, sua capacidade de personalização é limitada, uma vez que, nesta implementação, não incorpora informações adicionais sobre as características dos itens ou preferências específicas dos usuários.
+     
+    \item O \textbf{Modelo Baseado em Conteúdo (BC)} apresentou desempenho inferior ao Baseline em termos de RMSE, porém mostrou-se particularmente eficaz em cenários de \textit{cold-start}, uma vez que sua capacidade preditiva independe diretamente do volume de avaliações históricas. A análise de sensibilidade do hiperparâmetro $k$ indicou a existência de um ponto ótimo bem definido, reforçando a necessidade de limitar o número de itens vizinhos para evitar a introdução de ruído.
+    
+\end{itemize}
+
+Dessa forma, embora a Filtragem Colaborativa tenha apresentado o menor erro médio em determinados cenários, sua adoção isolada não é suficiente para garantir a robustez do sistema de recomendação como um todo. A ausência de mecanismos para lidar com \textit{cold-start} e a sensibilidade à esparsidade dos dados limitam sua aplicabilidade em contextos reais.
+
+Nesse contexto, a combinação dos modelos em uma abordagem híbrida surge como uma estratégia que permite conciliar desempenho preditivo, capacidade de personalização e cobertura do sistema. Ao integrar diferentes fontes de informação, o modelo híbrido permite mitigar as limitações individuais de cada abordagem, tornando o sistema mais robusto e adequado a cenários reais de recomendação.
+
+A fim de potencializar as forças de cada abordagem e reduzir seus impactos negativos, optou-se por implementar dois modelos híbridos distintos: Filtragem Colaborativa combinada ao modelo Baseline ($\text{FC} + \text{BL}$) e Filtragem Colaborativa combinada ao modelo Baseado em Conteúdo ($\text{FC} + \text{BC}$).
+
+
+As principais características de cada abordagem híbrida são:
+
+
+\begin{itemize}
+    \item \textbf{FC + BL:} combina a capacidade de personalização da Filtragem Colaborativa com a estabilidade numérica do modelo Baseline, atuando como um mecanismo de suavização das predições e reduzindo a variância dos erros, especialmente em cenários com dados ruidosos.
+    \item \textbf{FC + BC:} integra a Filtragem colaborativa com informações baseadas em conteúdo, ampliando a cobertura do sistema e mitigando o problema de \textit{cold-start}, uma vez que a predição não depende exclusivamente de interações históricas.
+\end{itemize}
+
+
+\subsection{Avaliação dos Modelos Híbridos}\label{analises_modelos_hibridos}
+
+Para um ajuste eficiente do modelo híbrido, foi conduzida uma análise de sensibilidade do coeficiente de hibridização $\beta$, que controla a contribuição relativa de cada componente no cálculo da nota prevista. Foram testados valores de $\beta$ no intervalo $[0, 1]$ com incrementos de $0,1$, onde:
+
+A Tabela \ref{tab:hybrid_beta_results} com os resultados completos da análise de sensibilidade do coeficiente de hibridização $\beta$ encontram-se apresentados no Apêndice \ref{chapter:metricas_hibridos_beta} deste trabalho. As Figuras~\ref{fig:hybrid_accuracy} e~\ref{fig:hybrid_ranking} ilustram o comportamento dos modelos híbridos em termos de métricas de acurácia e de ranking, respectivamente. 
+
+A análise das métricas de acurácia indica comportamentos distintos entre os dois modelos híbridos. No caso do modelo $\text{FC} + \text{BL}$, valores baixos de $\beta$ resultam em erros elevados, refletindo a influência predominante do modelo Baseado em Conteúdo. À medida que o peso da Filtragem Colaborativa aumenta, observa-se uma redução rápida do erro, evidenciando que a componente colaborativa corrige de forma eficiente as imprecisões iniciais do modelo híbrido. Para valores elevados de $\beta$, em especial a partir de $\beta = 0,8$, nota-se novamente o aumento do erro, sugerindo que a contribuição exclusiva da Filtragem Colaborativa não é suficiente para manter ganhos adicionais de acurácia. Esse comportamento indica que a combinação entre FC e BC é mais eficaz do que a utilização isolada de qualquer uma das abordagens.
+
+Já no modelo $\text{FC} + \text{BL}$, a variação do erro ao longo dos diferentes valores de $\beta$ é mais suave. Observa-se uma estabilização das métricas de erro à medida que o peso da Filtragem Colaborativa aumenta, indicando que o Baseline atua principalmente como um mecanismo de suavização das predições, sem contribuir de forma significativa para melhorias adicionais de acurácia. Nesse cenário, os resultados sugerem que a inclusão do Baseline no modelo híbrido oferece ganhos limitados em relação ao uso exclusivo da Filtragem Colaborativa.
+
+Quando comparados os dois modelos híbridos, nota-se que para $\beta = 0,6$ ambos apresentam desempenhos bastante semelhantes com relação aos erros, o que reduz a vantagem prática de um modelo em relação ao outro para esse valor específico do coeficiente de hibridização.
+
+A análise de sensibilidade do coeficiente de hibridização $\beta$ revelou que valores intermediários proporcionam o melhor compromisso entre desempenho preditivo e qualidade do ranking. Em particular, adotou-se $\beta = 0,7$ que, apesar de não apresentar o menor erro médio absoluto, oferece um RMSE e MAE competitivos aliados a melhorias significativas nas métricas de ranking além de não retirar completamente a contribuição do modelo Baseado em Conteúdo.
+
+Ainda considerando as métricas de ranking, o modelo $\text{FC} + \text{BC}$ apresenta desempenho superior com resultados mais consistentes para valores $\beta$ no intervalo $0,5 \leq \beta \leq 0,7$. A partir desse ponto, observa-se uma tendência de queda nas métricas, indicando que a redução do peso do modelo Baseado em Conteúdo compromete a qualidade do ranqueamento. 
+
+%Dessa forma, o modelo híbrido $\text{FC} + \text{BC}$ com $\beta = 0,6$ foi selecionado como a configuração final, por apresentar maior robustez, melhor capacidade de generalização e maior adequação a cenários reais de recomendação.
+
+\begin{figure}[H]
+    \centering
+    \caption{Comparação entre os modelos híbridos FC+Baseline e FC+BC em termos de métricas de acurácia para diferentes valores do coeficiente de hibridização $\beta$.}
+    \label{fig:hybrid_accuracy}
+
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/hybrid_rmse_beta.png}
+        \caption*{(a) RMSE em função de $\beta$.}
+        \label{fig:hybrid_rmse}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/hybrid_mae_beta.png}
+        \caption*{(b) MAE em função de $\beta$.}
+        \label{fig:hybrid_mae}
+    \end{minipage}
+\end{figure}
+
+
+
+
+\begin{figure}[H]
+    \centering
+    \caption{Comparação entre os modelos híbridos FC+Baseline e FC+BC em termos de métricas de ranking para diferentes valores do coeficiente de hibridização $\beta$.}
+    \label{fig:hybrid_ranking}
+
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/hybrid_precision_beta.png}
+        \caption*{(a) Precision@10 em função de $\beta$.}
+        \label{fig:hybrid_precision}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/hybrid_recall_beta.png}
+        \caption*{(b) Recall@10 em função de $\beta$.}
+        \label{fig:hybrid_recall}
+    \end{minipage}
+\end{figure}
+
+
+% \begin{table}
+%     \centering
+%     \caption{Métricas de desempenho dos modelos híbridos FC + BL e FC + BC para diferentes valores de $\beta$.}
+%     \label{tab:hybrid_beta_results}
+%     \begin{tabular}{cccccl}
+%         \toprule
+%         \textbf{$\beta$} & \textbf{Modelo} & \textbf{RMSE} & \textbf{MAE} & \textbf{P@10} & \textbf{R@10} \\
+%         \midrule
+%         0,0 & FC+BL & 1,1141 & 0,8352 & 0,8488 & 0,1721 \\
+%             & FC+BC & 1,1865 & 0,8877 & 0,7917 & 0,1595 \\
+%             &  &  &  &  &  \\
+%         0,1 & FC+BL & 1,1091 & 0,8310 & 0,8522 & 0,1729 \\
+%             & FC+BC & 1,1644 & 0,8696 & 0,8211 & 0,1660 \\
+%             &  &  &  &  &  \\
+%         0,2 & FC+BL & 1,1047 & 0,8273 & 0,8558 & 0,1739 \\
+%             & FC+BC & 1,1448 & 0,8537 & 0,8444 & 0,1715 \\
+%             &  &  &  &  &  \\
+%         0,3 & FC+BL & 1,1009 & 0,8241 & 0,8593 & 0,1749 \\
+%             & FC+BC & 1,1278 & 0,8402 & 0,8593 & 0,1750 \\
+%             &  &  &  &  &  \\
+%         0,4 & FC+BL & 1,0977 & 0,8215 & 0,8622 & 0,1757 \\
+%             & FC+BC & 1,1136 & 0,8291 & 0,8687 & 0,1775 \\
+%             &  &  &  &  &  \\
+%         0,5 & FC+BL & 1,0952 & 0,8195 & 0,8648 & 0,1764 \\
+%             & FC+BC & 1,1023 & 0,8205 & 0,8740 & 0,1790 \\
+%             &  &  &  &  &  \\
+%         0,6 & FC+BL & 1,0932 & 0,8180 & 0,8667 & 0,1769 \\
+%             & FC+BC & 1,0940 & 0,8146 & 0,8753 & 0,1795 \\
+%             &  &  &  &  &  \\
+%         0,7 & FC+BL & 1,0918 & 0,8171 & 0,8677 & 0,1772 \\
+%             & FC+BC & 1,0888 & 0,8113 & 0,8754 & 0,1796 \\
+%             &  &  &  &  &  \\
+%         0,8 & FC+BL & 1,0911 & 0,8168 & 0,8689 & 0,1776 \\
+%             & FC+BC & 1,0866 & 0,8108 & 0,8736 & 0,1790 \\
+%             &  &  &  &  &  \\
+%         0,9 & FC+BL & 1,0910 & 0,8171 & 0,8692 & 0,1777 \\
+%             & FC+BC & 1,0875 & 0,8130 & 0,8715 & 0,1783 \\
+%             &  &  &  &  &  \\
+%         1,0 & FC+BL & 1,0915 & 0,8179 & 0,8700 & 0,1780 \\
+%             & FC+BC & 1,0915 & 0,8179 & 0,8700 & 0,1780 \\
+%         \bottomrule
+%     \end{tabular}
+% \end{table}
+
+
+
+
+% A avaliação dos modelos foi conduzida utilizando o conjunto de teste separado conforme descrito na Seção \ref{sec:analise_exploratoria}. As métricas escolhidas para medir a acurácia preditiva foram o Erro Quadrático Médio (RMSE) conforme descrito em \ref{eq:rmse} e o Erro Absoluto Médio (MAE) conforme definido em \ref{eq:mae}. Essas métricas são amplamente utilizadas na literatura de sistemas de recomendação para quantificar a discrepância entre as notas previstas e as notas reais fornecidas pelos usuários.
+
+% Além das metricas de acurácia, também foram consideradas métricas de ranqueamento, como \textit{Precision} \ref{eq:precision_k} e \textit{Recall} \ref{eq:recall_k}, para avaliar a qualidade das listas de recomendações geradas pelos modelos. Essas métricas são cruciais para entender o desempenho do sistema em termos de relevância das recomendações apresentadas aos usuários.
+
+
+% \subsection{Configuração do Modelo Híbrido}
+
+% Por fim, o Modelo Híbrido foi estruturado como uma combinação linear ponderada (\textit{Weighted Hybrid}) para integrar a capacidade de descoberta de dois modelos.
+
+% A parametrização final deste modelo foi definida pelo coeficiente de hibridização $\beta = 0.5$. Isso implica que a previsão final atribui pesos iguais ($50\%$) à estimativa vinda da similaridade de mecânicas (Jaccard) e à estimativa vinda dos vieses estatísticos (Baseline). Essa configuração visa mitigar o problema de \textit{cold-start} de novos itens — onde o Baseline dependeria apenas da média global — utilizando as informações de conteúdo para refinar a previsão inicial.
+
+% \section{Discussão dos Resultados}\label{sec:avaliacao_quantitativa}
+
+% Nesta seção, serão apresentados e discutidos os resultados obtidos pelos quatro modelos implementados. A análise focará na comparação do desempenho em termos de precisão preditiva (RMSE e MAE) e qualidade do ranqueamento (Precision@10 e Recall@10). A Tabela \ref{tab:resumo_resultados} apresenta o comparativo final entre as abordagens.
+
+% \begin{table}[h]
+% \centering
+% \caption{Comparativo de Desempenho dos Modelos de Ajustados}
+% \label{tab:resumo_resultados}
+% \begin{tabular}{lcccc}
+% \toprule
+% \textbf{Modelo} & \textbf{RMSE} & \textbf{MAE} & \textbf{P@10} & \textbf{R@10} \\
+% \midrule
+% FC User-User (Pearson)          & 1,7101 & 1,4000 & 0,8601 & 0,1755 \\
+% Baseline ($\mu + b_u + b_i$)    & \textbf{1,1141} & 0,8352 & 0,8488 & 0,1721 \\
+% BC Item-Item (Jaccard)          & 1,1865 & 0,8881 & 0,7925 & 0,1596 \\
+% \textbf{Híbrido (BC + Baseline)} & 1,1173 & \textbf{0,8332} & \textbf{0,8623} & \textbf{0,1758} \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+% \subsection{Análise de Precisão da Nota (RMSE e MAE)}
+
+% Pelos dados da Tabela \ref{tab:resumo_resultados}, observa-se que o Modelo de Filtragem Colaborativa (FC User-User) apresentou o pior desempenho em termos de RMSE ($1,7101$) e MAE ($1,4000$). Isso sugere que, apesar de sua popularidade, a abordagem pura de FC pode não ser a mais adequada para este conjunto de dados específico.
+
+% Já o Modelo Baseline destacou-se como o mais preciso em termos de RMSE ($1,1141$), confirmando sua eficácia em capturar os vieses estatísticos inerentes aos usuários e itens. O Modelo Baseado em Conteúdo (BC Jaccard) apresentou um desempenho intermediário, com RMSE de $1,1865$ e MAE de $0,8881$, indicando que a similaridade baseada em atributos é útil, mas não tão eficaz quanto o Baseline para prever notas.
+
+% O Modelo Híbrido, por sua vez, mostrou-se superior em dois aspectos cruciais:
+
+% \begin{itemize}
+%     \item \textbf{Estabilidade do RMSE:} O RMSE do Híbrido ($1,1173$) apresentou-se virtualmente idêntico ao do Baseline ($1,1141$), que foi o modelo mais preciso neste quesito. Isso indica que a componente Baseline conseguiu '"dominar´´ o erro, garantindo que a introdução do conteúdo (Jaccard) não degradasse a precisão da nota prevista.
+%     \item \textbf{Robustez do MAE:} O Híbrido atingiu o \textbf{menor Erro Absoluto Médio (MAE: 0,8332)} entre todos os modelos testados. Este é um indicador excelente de robustez, sugerindo que, em média, as previsões deste modelo são as mais próximas do valor real, minimizando a ocorrência de grandes discrepâncias (\textit{outliers}).
+% \end{itemize}
+
+% \subsection{Análise de Qualidade do Ranking (Top-N)}
+% Uma vez adotado Modelo Híbrido como o principal candidato à melhor modelo baseado na precisão da nota, a análise de ranqueamento revelou insights adicionais sobre sua eficácia. Enquanto o Baseline garantiu a precisão da nota, a componente de Conteúdo (BC Jaccard) foi responsável por refinar a ordenação das recomendações.
+
+% \begin{itemize}
+%     \item \textbf{Superação da Filtragem Colaborativa:} Em métricas de ranqueamento, o modelo FC User-User (Pearson) havia se mostrado competitivo. No entanto, o Modelo Híbrido superou tanto o FC Pearson quanto o Baseline, atingindo a melhor \textbf{Precision@10 (0,8623)}.
+%     \item \textbf{Melhoria no Recall:} O modelo também alcançou o melhor \textbf{Recall@10 (0,1758)}, indicando uma capacidade superior de recuperar itens relevantes dentro do universo de preferências do usuário.
+% \end{itemize}
+
+% O modelo utilizou a previsibilidade estatística do Baseline para manter as notas em patamares realistas, enquanto utilizou a similaridade de atributos do Jaccard para desempatar e priorizar itens que possuem maior afinidade temática com o perfil do usuário.
+
+As Figuras \ref{fig:comparacao_modelos_acuracia} e \ref{fig:comparacao_modelos_ranking} sintetizam o desempenho dos modelos avaliados, destacando a superioridade do modelo híbrido ponderado por $\beta = 0,7$ em termos de equilíbrio entre precisão preditiva e qualidade do ranqueamento.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/comparacao_modelos_acuracia.png}
+    \caption{Comparativo das métricas de acurácia dos modelos avaliados.}
+    \label{fig:comparacao_modelos_acuracia}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/comparacao_modelos_ranking.png}
+    \caption{Comparativo das métricas de ranking dos modelos avaliados.}
+    \label{fig:comparacao_modelos_ranking}
+\end{figure}
+
+
+\section{Modelo em Produção}
+
+Afim de validar a aplicabilidade do modelo proposto em um cenário real, realizou-se um experimento adicional de como o sistema de recomendação híbrido funciona ao tentar recomendar jogos para um usuário.
+
+Foi filtrado da base de usuário que não participou do treinamento e que tinha pelo menos 20 avaliações feitas. Das notas dadas por esse usuário foram ocultadas 5 avaliações aleatórias para que o sistema pudesse tentar recomendá-las. Com base nas avaliações restantes, o sistema utilizou o modelo híbrido para prever as notas dos jogos que ele ``ainda não havia avaliado''. A seguir, são apresentadas as recomendações geradas pelo modelo, ordenadas pela nota prevista e os valores reais (ocultos) para comparação:
+
+
+\subsection{Validação do Modelo com Jogos Não Avaliados pelo Usuário}
+
+Para avaliar a capacidade de generalização do modelo de recomendação, realizou-se um experimento adicional: prever a nota de jogos que não estavam presentes no histórico de avaliações de um usuário de teste (denominado aqui como \texttt{``monots''}). O modelo utilizou suas 310 avaliações conhecidas para estimar as notas de cinco jogos aleatoreamente selecionados considerando apenas aqueles presentes no conjunto de treinamento, permitindo medir o erro absoluto individual em cada predição. A aleatoriedade do processo foi controlada por meio da fixação de uma semente, assegurando a reprodutibilidade dos resultados.
+
+\begin{table}[h]
+\centering
+\caption{Validação do Modelo: Previsões para Jogos Não Avaliados}
+\label{tab:validacao_monots}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Jogo} & \textbf{Nota Prevista} & \textbf{Nota Real} & \textbf{Erro Absoluto} \\
+\midrule
+Deep Sea Adventure & 7,3050 & 6,5000 & 0,8050 \\
+BANG! & 7,0340 & 8,0000 & 0,9660 \\
+La Granja & 7,2450 & 8,0000 & 0,7550 \\
+Stone Age & 7,2650 & 8,0000 & 0,7350 \\
+Dungeon Lords & 7,0500 & 8,7000 & 1,6500 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Os resultados mostram que o erro absoluto variou entre aproximadamente 0,7353 e 1,6500 pontos em uma escala de 0 a 10. Valores próximos de 1 ponto de erro são compatíveis com o RMSE global do modelo, indicando consistência entre desempenho agregado e desempenho em itens individuais. O maior erro ocorreu em \textit{Dungeon Lords}, sugerindo que jogos com características semânticas ou mecânicas não suficientemente representadas no perfil do usuário podem gerar maior incerteza preditiva. Ainda assim, a maior parte das previsões permaneceu dentro de margens aceitáveis.
+
+Conforme discutido na Seção \ref{sec:eda_graficos}, vale ressaltar que o modelo produz previsões de notas contínuas, enquanto as avaliações reais de alguns usuários tendem a ser discretas (com ou sem incrementos de 0,5). Isso implica que pequenas discrepâncias podem ser atribuídas à natureza intrínseca do sistema de avaliação, onde diferenças mínimas na percepção do usuário podem resultar em variações na nota atribuída.
+

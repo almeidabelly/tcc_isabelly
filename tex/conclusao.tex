@@ -1,0 +1,19 @@
+Com base na análise multidimensional (Erro, Ranking e eficiência computacional), conclui-se que o \textbf{Modelo Híbrido Ponderado $\text{FC+BC}$} com fator de hibridização $\beta = 0,7$ é a solução definitiva para o problema proposto neste trabalho. Sua superioridade justifica-se por três pilares:
+
+
+\begin{enumerate}
+    \item \textbf{Equilíbrio entre desempenho preditivo e generalização:} a combinação entre Filtragem Colaborativa e informações Baseadas em Conteúdo permite alcançar níveis de RMSE e MAE competitivos, sem depender exclusivamente de interações históricas, o que resulta em maior robustez frente à esparsidade dos dados.
+
+    \item \textbf{Mitigação do problema de \textit{cold-start}:} ao preservar a contribuição do modelo Baseado em Conteúdo, o híbrido FC+BC mantém capacidade preditiva para itens com poucas avaliações, ampliando a cobertura do sistema e tornando-o mais adequado a cenários reais de aplicação.
+    
+    \item \textbf{Melhoria na qualidade do ranking:} a integração de padrões colaborativos com similaridade semântica entre itens produz listas de recomendação mais relevantes e bem ordenadas, refletidas em ganhos nas métricas de Precision@10 e Recall@10 quando comparado aos modelos individuais e ao híbrido FC+BL.
+\end{enumerate}
+
+% Portanto, este modelo Híbrido escolhido não apenas oferece a melhor performance técnica, mas também se apresenta como a solução mais viável para um ambiente de produção com restrições de processamento.
+
+
+Este trabalho pode ser ampliado em várias direções para fortalecer tanto a metodologia quanto a eficiência prática do sistema de recomendação. Embora o Baseline tenha sido aqui utilizado como uma abordagem heurística simples por conta de limitações computacionais, \citeonline{aggarwal2016recommender} destaca que ele pode ser aprimorado por modelos mais robustos. Uma evolução natural consiste em introduzir regularização aos vieses de usuários e itens, substituindo o cálculo por médias simples pela solução de um problema de mínimos quadrados regularizados. Essa reformulação reduz sobreajuste e melhora a estabilidade do modelo, especialmente para usuários e itens com poucas avaliações.
+
+A partir desse estágio, o sistema pode avançar para um modelo de Fatoração de Matrizes, incorporando fatores latentes capazes de capturar padrões mais complexos de interação. Nesse caso, a predição deixa de depender apenas dos vieses e passa a incluir o produto escalar entre vetores latentes de usuários e itens, resultando em ganhos de desempenho já consolidados na literatura. Por fim, o modelo híbrido empregado neste trabalho pode ser fortalecido ao substituir o Baseline heurístico por essa versão regularizada ou pelo SVD completo, combinando o ganho estatístico da fatoração com a capacidade temática do componente Baseado em Conteúdo.
+
+Do ponto de vista das bases dados usadas, há informações adicionais que podem ser exploradas para enriquecer o perfil dos jogos. A inclusão de atributos como número de jogadores, tempo de jogo, faixa etária recomendada e complexidade pode fornecer dimensões extras para a similaridade baseada em conteúdo. 

@@ -1,0 +1,63 @@
+% Comando simples para exibir comandos Latex no texto
+% \newcommand{\comando}[1]{\textbf{$\backslash$#1}}
+
+Este trabalho propõe o desenvolvimento e análise de sistemas de recomendação aplicados ao contexto dos jogos de tabuleiro modernos, com base em dados reais extraídos do BoardGameGeek e disponibilizados no Kaggle.
+A pesquisa busca compreender como diferentes abordagens — colaborativa, baseada em conteúdo e híbrida — podem auxiliar jogadores na descoberta de novos títulos alinhados aos seus interesses e preferências.
+Ao final, espera-se obter um modelo capaz de recomendar jogos relevantes, avaliando seu desempenho por meio de métricas quantitativas e qualitativas e discutindo suas limitações e potenciais de aplicação prática.
+
+\section{Os Jogos de Tabuleiro Modernos}
+
+Não é possível determinar com precisão o período e tampouco qual foi o primeiro jogo de tabuleiro a ser criado na história da humanidade. Entretanto, há indícios de que esses jogos remontam às primeiras civilizações já que as peças de jogo mais antigas descobertas foram encontradas no sudoeste da Turquia há cerca de 5.000a.C. 
+
+Um dos candidatos mais reconhecidos é o Royal Game of Ur, originário da antiga Mesopotâmia há cerca de 4.600 anos, com exemplares datados entre 2600 e 2400 a.C. Outro jogo muito retratado nos registros históricos é o Mancala. De origem africana, o jogo é caracterizado pelo uso de tabuleiro e de sementes como peças. Estima-se que o Mancala já fosse praticado por volta de 2.500 a.C., tendo se transformado ao longo do tempo em mais de 200 variações, resultado de adaptações e inovações culturais \cite{wikipedia_boardgame}.
+
+Outros jogos clássicos também marcaram a história e permanecem presentes até os dias atuais como o Senet, jogado no Antigo Egito há mais de 5.000 anos; o Go, de origem chinesa, que data de aproximadamente 2.500 a.C.; e o Xadrez, surgido na Índia por volta do século VII d.C. Já em períodos mais recentes, outros jogos se tornaram igualmente icônicos e seguem como parte de nossa história civilizatória. Exemplos disso são a Damas, difundida a partir da Idade Média; o Dominó, com raízes na China e popularizado no Ocidente a partir do século XVIII; e jogos do século XX que alcançaram projeção global, como o Banco Imobiliário (Monopoly) e o Jogo da Vida (The Game of Life). Todos esses jogos citados são chamados pelos amantes do hobby de ``jogos clássicos''.
+
+O termo ``jogos de tabuleiro modernos'' passou a ser utilizado principalmente a partir da década de 1990, período marcado pelo sucesso internacional Colonizadores de Catan (lançado em 1995 pelo designer Klaus Teuber). Considerado um divisor de águas no setor, Catan introduziu elementos inovadores, como a forte interação entre os jogadores por meio de trocas de recursos, mecânicas de desenvolvimento estratégico e uma dinâmica que equilibrava competição e cooperação \cite{ludopedia2023}.
+
+Embora não exista uma definição oficial para o conceito, a expressão ``jogo de tabuleiro moderno'' costuma ser empregada para designar títulos que se diferenciam dos clássicos por suas características próprias. Esses jogos geralmente apresentam regras, que favorecem a acessibilidade a diferentes públicos, ao mesmo tempo em que oferecem profundidade estratégica. Também se caracterizam por partidas mais curtas e dinâmicas, nas quais os jogadores conseguem permanecer engajados até o final da partida, evitando eliminações precoces e longos períodos de espera para o início de um próximo jogo.
+
+Outro traço marcante é a ênfase nas decisões estratégicas em detrimento do acaso, de modo que a vitória depende muito mais do planejamento e das escolhas feitas ao longo da partida do que da sorte em rolagens de dados ou sorteios de cartas. Além disso, as interações entre jogadores tendem a ser menos violentas e mais indiretas, centradas na disputa por recursos, rotas ou territórios. A estética também ocupa lugar de destaque, já que os jogos modernos são concebidos para proporcionar uma experiência visualmente agradável, com componentes de alta qualidade e temáticas imersivas.
+
+Entre os estilos mais relevantes dentro desse movimento, destacam-se os chamados ameritrash, que valorizam narrativas fortes, conflito direto e alta imersão temática, e os eurogames, ou estilo alemão, que priorizam regras acessíveis, equilíbrio entre jogadores e uma abordagem mais estratégica e inclusiva. Este último, em particular, tem sido amplamente reconhecido como o principal responsável pelo crescimento recente do hobby em escala global \cite{papergames2021, papergames2022}.
+
+
+\section{Contribuições Educacionais e Sociais dos Jogos de Tabuleiro}
+
+Os jogos de tabuleiro vêm ganhando destaque não apenas como forma de entretenimento, mas também pelos benefícios educacionais, sociais e formativos que proporcionam. Do ponto de vista educacional e do desenvolvimento pessoal, eles são eficazes na formação de mentalidades empreendedoras em jovens, ao estimular habilidades como pensamento estratégico, tomada de decisões e disposição para assumir riscos. Ao propor desafios que exigem planejamento e resolução de problemas, os jogos de tabuleiro se tornam ferramentas valiosas para o desenvolvimento de competências empreendedoras \cite{shaikh2023exploring}.
+
+Além disso, os jogos de tabuleiro desempenham um papel importante na promoção da interação social e no fortalecimento dos vínculos familiares. Eles criam um ambiente propício para a convivência, a cooperação e o diálogo entre pais e filhos, contribuindo para a construção de relações mais harmoniosas e significativas no núcleo familiar \cite{rahmatilani2024board}.
+
+
+\section{O Mercado dos Jogos de Tabuleiro}
+
+O mercado global de jogos de tabuleiro, também chamados de \textit{board games}, é um setor em constante crescimento, com estimativas de movimentação significativas. Segundo dados da consultoria \textit{Statista}, o mercado de jogos de tabuleiro no mundo movimentou mais de R\$ 53 bilhões apenas em 2024 \cite{statista2025}.
+
+De acordo com um relatório da \textit{Grand View Research} \cite{grandview2025}, o mercado global de jogos de tabuleiro foi avaliado em aproximadamente 19,9 bilhões de dólares em 2024 e projeta-se que alcance cerca de 31,93 bilhões de dólares até 2030, com uma taxa de crescimento anual composta (CAGR) de cerca de 8,3\% durante de 2025 a 2030. No Brasil, o mercado de jogos de tabuleiro também tem mostrado um crescimento notável. Segundo dados do Anuário Estatísco de Brinquedos de 2025, elaborado pela Associação Brasileira de Fabricantes de Brinquedos (ABRINQ), os jogos de tabuleiros representaram 14,8\% das vendas de brinquedos no país em 2024, um aumento de 5,7 p.p. em comparação aos 9,1\% registrados em 2017, refletindo uma tendência de alta no segmento \cite{abrinq2025_anuario}. %Em complemento, o número de editoras especializadas em jogos de tabuleiro no Brasil tem crescido. O site Ludopédia, que é uma das maiores bases de dados sobre jogos de tabuleiro no país, indica que o número de editoras nacionais que o Brasil conta hoje com mais de 50 editoras totalmente nacionais, em comparação com cerca de 3 em 2017 \cite{ludopedia2023}, isso sem mencionar a número crescente autores brasileiros que têm criado novos jogos que se destacam no mercado nacional e internacional.
+
+Esse crescimento é resultado de várias condições. A globalização e a internet facilitaram o acesso a uma variedade maior de títulos, permitindo que jogadores de diferentes regiões descubram e compartilhem suas experiências. Plataformas de financiamento coletivo, como o Kickstarter, também desempenharam um papel importante ao possibilitar que designers independentes lancem seus jogos diretamente para o público, sem depender exclusivamente das grandes editoras. A pandemia de COVID-19 também contribuiu para esse crescimento, já que muitas pessoas buscaram alternativas de entretenimento em casa durante os períodos de isolamento social. Esses fatores impulsionaram a popularização dos jogos de tabuleiro modernos e a expansão das comunidades de jogadores. 
+
+O avanço desse mercado trouxe também novos desafios, especialmente para novos jogadores, que muitas vezes se deparam com uma vasta quantidade de títulos disponíveis. Embora existam plataformas especializadas que auxiliam na organização e divulgação desses jogos, como a Ludopedia, principal comunidade online de jogadores de tabuleiro no Brasil, e o {\textit{BoardGameGeek}} (BGG), maior base de dados internacional sobre o tema, os recursos de avaliação, rankings e recomendações oferecidos por esses sites podem não ser suficientes para orientar as escolhas dos consumidores. 
+
+Nesse contexto, a aplicação de sistemas de recomendação surge como uma solução promissora para reduzir a sobrecarga de opções e facilitar a descoberta de jogos que atendam melhor aos diferentes perfis de público. Tal ferramenta pode não apenas potencializar o engajamento dos jogadores, mas também ampliar o acesso a experiências lúdicas que promovam o aprendizado, o convívio e o desenvolvimento pessoal.
+
+
+\section{Os Sistemas de Recomendação}
+
+Desde o inicio da internet, o volume de informações disponíveis cresceu exponencialmente, tornando cada vez mais difícil para os usuários encontrar conteúdos relevantes. Nesse contexto, os sistemas de recomendação surgiram como uma solução eficaz para filtrar e sugerir itens com base nas preferências e comportamentos dos usuários. Esses sistemas são amplamente utilizados em diversas plataformas, como serviços de streaming (\textit{Netflix}, \textit{Spotify}), e-commerce (\textit{Amazon}, \textit{eBay}) e redes sociais (\textit{Facebook}, \textit{Instagram}), ajudando os usuários a descobrir produtos, filmes, músicas e outros conteúdos que possam ser do seu interesse \cite{ricci2010introduction}.
+
+Os sistemas de recomendação são algoritmos projetados para sugerir itens relevantes a usuários com base em seus históricos de interação, preferências declaradas ou comportamentos semelhantes de outros usuários. Eles podem ser classificados em três categorias principais: filtragem colaborativa, filtragem baseada em conteúdo e sistemas híbridos \cite{aggarwal2016recommender}.
+
+
+\section{Objetivos do Trabalho}
+
+Este trabalho tem por objetivo explorar a aplicação de sistemas de recomendação no contexto dos jogos de tabuleiro modernos, visando auxiliar os jogadores na descoberta de novos títulos que se alinhem com seus gostos e preferências. A seguir, serão apresentados os conceitos fundamentais dos sistemas de recomendação, suas técnicas e metodologias. Além disso, será feita uma análise comparativa sobre os desempenho das três categorias de algoritmos no contexto da base de dados selecionada para este trabalho. Ao final, serão apresentadas as conclusões e sugestões para trabalhos futuros, destacando o potencial impacto de sistemas de recomendação na experiência dos jogadores de jogos de tabuleiro modernos.
+
+De maneira mais específica, este trabalho busca:
+\begin{itemize}
+    \item Compreender os fundamentos dos sistemas de recomendação e suas abordagens principais;
+    \item Pré-processar os dados da base Kaggle de forma adequada para o desenvolvimento dos sistemas de recomendação;
+    \item Avaliar o desempenho de diferentes algoritmos de recomendação: Filtragem Colaborativa, Baseada em Conteúdo e Híbrida;
+    \item Identificar as limitações e potenciais de aplicação prática dos sistemas de recomendação;
+    \item Avaliar o desempenho dos modelos com métricas de erro preditivo (como RMSE e MAE) e métricas complementares de experiência do usuário (como diversidade e novidade).
+\end{itemize}
