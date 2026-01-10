@@ -1,0 +1,89 @@
+\documentclass[aspectratio=169]{beamer}
+
+% ======================================================
+% PACOTES ESSENCIAIS
+% ======================================================
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+% ======================================================
+% AJUSTES VISUAIS GERAIS
+% ======================================================
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+
+% Fontes maiores (pensando em projetor)
+\setbeamerfont{frametitle}{size=\Large}
+\setbeamerfont{normal text}{size=\large}
+
+% Margens internas (importante com background)
+\setbeamersize{text margin left=1cm, text margin right=1cm}
+
+% ======================================================
+% BACKGROUNDS (layout institucional)
+% ======================================================
+\newcommand{\bgcapa}{
+  \usebackgroundtemplate{
+    \includegraphics[width=\paperwidth,height=\paperheight]{layout/capa.pdf}
+  }
+}
+
+\newcommand{\bgbranco}{
+  \usebackgroundtemplate{
+    \includegraphics[width=\paperwidth,height=\paperheight]{layout/slide-branco.pdf}
+  }
+}
+
+\newcommand{\bgfundo}{
+  \usebackgroundtemplate{
+    \includegraphics[width=\paperwidth,height=\paperheight]{layout/slide-fundo.pdf}
+  }
+}
+
+% ======================================================
+% COMANDO PADRÃO PARA SLIDE DE SEÇÃO
+% ======================================================
+\newcommand{\sectionframe}[1]{
+{
+\bgfundo
+\begin{frame}[plain]
+\vspace{0.8cm}
+\hspace{0.6cm}
+\Huge\textbf{#1}
+\end{frame}
+}
+}
+
+% ======================================================
+\begin{document}
+
+% ======================================================
+% CAPA
+% ======================================================
+\bgcapa
+\begin{frame}[plain]
+% Capa inteira no background
+\end{frame}
+
+% ======================================================
+% SEÇÕES DA APRESENTAÇÃO
+% (serão preenchidas depois)
+% ======================================================
+\input{tex/01-introducao}
+\input{tex/02-metodologia}
+\input{tex/03-dados}
+\input{tex/04-resultados}
+\input{tex/05-conclusoes}
+
+% ======================================================
+% BIBTEX "SILENCIADO" (mantido por segurança)
+% ======================================================
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{dummy}
+
+\end{document}

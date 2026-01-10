@@ -1,0 +1,259 @@
+\section{Metodologia}
+\sectionframe{Metodologia}
+
+% ======================================================
+% O QUE SÃO SISTEMAS DE RECOMENDAÇÃO
+% ======================================================
+{
+\bgbranco
+\begin{frame}{O que são Sistemas de Recomendação}
+Sistemas de recomendação são ferramentas computacionais projetadas para
+auxiliar usuários na descoberta de itens de interesse em ambientes com
+grande volume de opções.
+
+\vspace{0.4cm}
+
+\begin{itemize}
+  \item Utilizados em domínios como filmes, músicas, produtos e jogos
+  \item Baseiam-se em dados históricos de interação dos usuários
+  \item Buscam reduzir a sobrecarga de escolha
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% OBJETIVOS DOS SISTEMAS DE RECOMENDAÇÃO
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Objetivos dos Sistemas de Recomendação}
+Os principais objetivos dos sistemas de recomendação incluem:
+
+\begin{itemize}
+  \item Sugerir itens relevantes de acordo com o perfil do usuário
+  \item Melhorar a experiência e satisfação do usuário
+  \item Aumentar o engajamento com a plataforma
+  \item Auxiliar na descoberta de novos itens
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% TIPOS E ABORDAGENS
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Tipos e Abordagens de Sistemas de Recomendação}
+Diferentes abordagens podem ser adotadas na construção de sistemas de
+recomendação, cada uma com características específicas.
+
+\vspace{0.4cm}
+
+\begin{itemize}
+  \item Filtragem Colaborativa
+  \item Sistemas Baseados em Conteúdo
+  \item Modelos Baseline
+  \item Sistemas Híbridos
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% FILTRAGEM COLABORATIVA
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Filtragem Colaborativa}
+A filtragem colaborativa explora padrões de avaliação entre usuários e itens,
+assumindo que usuários com comportamentos semelhantes tendem a compartilhar
+preferências.
+
+\vspace{0.3cm}
+
+O problema é modelado por uma matriz de avaliações
+\( R \in \mathbb{R}^{|U| \times |I|} \), onde \( r_{ui} \) representa a
+avaliação do usuário \( u \) para o item \( i \).
+
+\vspace{0.3cm}
+
+A matriz \(R\) é tipicamente esparsa.
+\end{frame}
+}
+
+{
+\bgbranco
+\begin{frame}{Filtragem Colaborativa: Predição e Top-\(k\)}
+A predição da avaliação é realizada a partir dos \(k\) vizinhos mais similares
+(Top-\(k\)):
+
+\[
+\hat{r}_{ui} =
+\bar{r}_u +
+\frac{
+\sum_{v \in N_k(u)} \text{sim}(u,v)\,(r_{vi} - \bar{r}_v)
+}{
+\sum_{v \in N_k(u)} |\text{sim}(u,v)|
+}
+\]
+
+\vspace{0.3cm}
+
+\textbf{Vantagens}
+\begin{itemize}
+  \item Boa capacidade de capturar padrões coletivos
+\end{itemize}
+
+\textbf{Desvantagens}
+\begin{itemize}
+  \item Sensível à esparsidade e ao problema de \textit{cold-start}
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% SISTEMAS BASEADOS EM CONTEÚDO
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Sistemas Baseados em Conteúdo}
+Os sistemas baseados em conteúdo recomendam itens semelhantes àqueles
+previamente avaliados pelo usuário, utilizando características descritivas
+dos itens.
+
+\vspace{0.3cm}
+
+A predição é obtida considerando os \(k\) itens mais similares:
+
+\[
+\hat{r}_{ui} =
+\frac{
+\sum_{j \in N_k(i)} \text{sim}(i,j)\, r_{uj}
+}{
+\sum_{j \in N_k(i)} |\text{sim}(i,j)|
+}
+\]
+
+\vspace{0.3cm}
+
+\textbf{Vantagens}
+\begin{itemize}
+  \item Menor impacto do \textit{cold-start} de usuários
+\end{itemize}
+
+\textbf{Desvantagens}
+\begin{itemize}
+  \item Dependência da qualidade dos atributos dos itens
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% MODELO BASELINE
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Modelo Baseline}
+O modelo baseline fornece uma estimativa simples das avaliações,
+considerando efeitos globais e individuais:
+
+\[
+\hat{r}_{ui} = \mu + b_u + b_i
+\]
+
+\vspace{0.3cm}
+
+\textbf{Objetivo}
+\begin{itemize}
+  \item Servir como referência mínima de desempenho
+\end{itemize}
+
+\textbf{Vantagens}
+\begin{itemize}
+  \item Simples e computacionalmente eficiente
+\end{itemize}
+
+\textbf{Desvantagens}
+\begin{itemize}
+  \item Não captura interações complexas entre usuários e itens
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% MODELO HÍBRIDO
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Modelo Híbrido}
+Os sistemas híbridos combinam diferentes abordagens de recomendação,
+buscando explorar suas vantagens complementares.
+
+\[
+\hat{r}_{ui}^{(h)} =
+\alpha\,\hat{r}_{ui}^{(FC)} +
+(1-\alpha)\,\hat{r}_{ui}^{(BC)}
+\]
+
+\vspace{0.3cm}
+
+\begin{itemize}
+  \item Integra filtragem colaborativa e conteúdo
+  \item Reduz limitações individuais dos modelos
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% MEDIDAS DE SIMILARIDADE
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Medidas de Similaridade}
+As medidas de similaridade variam conforme o tipo de sistema de recomendação.
+
+\vspace{0.3cm}
+
+\begin{itemize}
+  \item \textbf{Correlação de Pearson}: adequada para filtragem colaborativa
+  \item \textbf{Similaridade do Cosseno}: utilizada em vetores de atributos
+  \item \textbf{Distância Euclidiana}: sensível à magnitude das avaliações
+  \item \textbf{Coeficiente de Jaccard}: apropriado para dados binários
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% MÉTRICAS DE AVALIAÇÃO
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Métricas de Avaliação}
+As métricas de avaliação foram divididas em dois grupos:
+
+\vspace{0.3cm}
+
+\textbf{Métricas de Acurácia}
+\[
+\text{MAE} =
+\frac{1}{N}\sum |r_{ui} - \hat{r}_{ui}|
+\]
+
+\[
+\text{RMSE} =
+\sqrt{\frac{1}{N}\sum (r_{ui} - \hat{r}_{ui})^2}
+\]
+
+\vspace{0.3cm}
+
+\textbf{Métricas de Ranqueamento}
+\[
+\text{Precision@k} =
+\frac{| \text{itens relevantes} \cap \text{top-}k |}{k}
+\]
+
+\[
+\text{Recall@k} =
+\frac{| \text{itens relevantes} \cap \text{top-}k |}{|\text{itens relevantes}|}
+\]
+\end{frame}
+}

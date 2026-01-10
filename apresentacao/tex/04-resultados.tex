@@ -1,0 +1,300 @@
+\section{Resultados}
+\sectionframe{Resultados}
+
+% ======================================================
+% 4.1 IMPLEMENTAÇÃO E ANÁLISE PRÁTICA
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Implementação e Análise Prática}
+Este capítulo apresenta os resultados obtidos a partir da implementação
+dos modelos de recomendação descritos na metodologia.
+
+\vspace{0.3cm}
+
+\begin{itemize}
+  \item Análise exploratória e pré-processamento dos dados
+  \item Definição da matriz de avaliações
+  \item Treinamento, parametrização e avaliação dos modelos
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% 4.2 ANÁLISE EXPLORATÓRIA E PRÉ-PROCESSAMENTO
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Distribuição das Notas}
+A distribuição das avaliações permite compreender o comportamento
+geral das notas atribuídas pelos usuários.
+
+%\vspace{0.3cm}
+
+\centering
+\includegraphics[width=0.65\textwidth]{../images/hist_notas.png}
+\end{frame}
+}
+
+{
+\bgbranco
+\begin{frame}{Distribuição de Avaliações por Usuário}
+A maioria dos usuários avalia apenas um número reduzido de jogos,
+o que contribui para a esparsidade da base.
+
+%\vspace{0.3cm}
+
+\centering
+\includegraphics[width=0.65\textwidth]{../images/dist_avaliacoes_usuario.png}
+\end{frame}
+}
+
+{
+\bgbranco
+\begin{frame}{Distribuição de Avaliações por Jogo}
+Observa-se concentração de avaliações em um subconjunto reduzido
+de jogos, indicando assimetria de popularidade.
+
+%\vspace{0.3cm}
+
+\centering
+\includegraphics[width=0.65\textwidth]{../images/dist_avaliacoes_jogo.png}
+\end{frame}
+}
+
+% ======================================================
+% 4.3 DEFINIÇÃO DA MATRIZ R
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Matriz de Avaliações \(R\)}
+Após o pré-processamento, os dados são organizados em uma matriz
+usuário--jogo \(R\), utilizada como base para os modelos de recomendação.
+
+\vspace{0.3cm}
+
+\begin{itemize}
+  \item Linhas representam usuários
+  \item Colunas representam jogos
+  \item Entradas correspondem às avaliações observadas
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% 4.4 DIVISÃO DOS DADOS
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Divisão dos Dados em Treino e Teste}
+Os experimentos foram conduzidos por meio de uma divisão dos dados
+em conjuntos de treinamento e teste.
+
+\vspace{0.3cm}
+
+\begin{itemize}
+  \item Avaliação realizada em cenário offline
+  \item Garantia de comparabilidade entre os modelos
+\end{itemize}
+\end{frame}
+}
+
+% ======================================================
+% 4.5 TREINAMENTO DOS MODELOS
+% ======================================================
+% 4.5.1 FILTRAGEM COLABORATIVA — ACURÁCIA
+{
+\bgbranco
+\begin{frame}{Filtragem Colaborativa — Sensibilidade ao Top-\(k\) (Acurácia)}
+\vspace{0.2cm}
+
+\begin{columns}
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/fc_k_rmse.png}
+  \small RMSE
+
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/fc_k_mae.png}
+  \small MAE
+\end{columns}
+
+\end{frame}
+}
+
+% 4.5.1 FILTRAGEM COLABORATIVA — RANKING
+{
+\bgbranco
+\begin{frame}{Filtragem Colaborativa — Sensibilidade ao Top-\(k\) (Ranking)}
+\vspace{0.2cm}
+
+\begin{columns}
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/fc_k_precision.png}
+  \small Precision@k
+
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/fc_k_recall.png}
+  \small Recall@k
+\end{columns}
+
+\end{frame}
+}
+
+
+% ------------------------------------------------------
+% 4.5.2 BASEADO EM CONTEÚDO — ACURÁCIA
+{
+\bgbranco
+\begin{frame}{Baseado em Conteúdo — Sensibilidade ao Top-\(k\) (Acurácia)}
+\vspace{0.2cm}
+
+\begin{columns}
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/bc_rmse_k.png}
+  \small RMSE
+
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/bc_mae_k.png}
+  \small MAE
+\end{columns}
+
+\end{frame}
+}
+
+% ------------------------------------------------------
+% 4.5.2 BASEADO EM CONTEÚDO — RANKING
+{
+\bgbranco
+\begin{frame}{Baseado em Conteúdo — Sensibilidade ao Top-\(k\) (Ranking)}
+\vspace{0.2cm}
+
+\begin{columns}
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/bc_precision_k.png}
+  \small Precision@k
+
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/bc_recall_k.png}
+  \small Recall@k
+\end{columns}
+
+\end{frame}
+}
+
+
+% ------------------------------------------------------
+% 4.5.3 MODELO BASELINE — RESULTADOS
+{
+\bgbranco
+\begin{frame}{Modelo Baseline — Resultados}
+O modelo baseline é utilizado como referência mínima de desempenho,
+permitindo avaliar os ganhos obtidos pelos modelos mais complexos.
+
+\vspace{0.4cm}
+
+\centering
+\begin{table}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Modelo & MAE & RMSE & Precision@k & Recall@k \\
+\midrule
+Baseline & XX.XXX & XX.XXX & XX.XXX & XX.XXX \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.3cm}
+
+\begin{itemize}
+  \item Não depende de vizinhança nem de parâmetros
+  \item Serve como linha de base para comparação
+\end{itemize}
+
+\end{frame}
+}
+
+
+% ======================================================
+% 4.6 MODELO HÍBRIDO — ACURÁCIA
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Modelo Híbrido — Sensibilidade ao Parâmetro \(\beta\) (Acurácia)}
+\vspace{0.2cm}
+
+\begin{columns}
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/hybrid_rmse_beta.png}
+  \small RMSE
+
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/hybrid_mae_beta.png}
+  \small MAE
+\end{columns}
+
+\end{frame}
+}
+
+% ======================================================
+% 4.6 MODELO HÍBRIDO — RANKING
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Modelo Híbrido — Sensibilidade ao Parâmetro \(\beta\) (Ranking)}
+\vspace{0.2cm}
+
+\begin{columns}
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/hybrid_precision_beta.png}
+  \small Precision@k
+
+  \column{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{../images/hybrid_recall_beta.png}
+  \small Recall@k
+\end{columns}
+
+\end{frame}
+}
+
+
+% ======================================================
+% 4.7 COMPARAÇÃO FINAL DOS MODELOS
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Comparação Final — Acurácia}
+A comparação entre os modelos evidencia diferenças no desempenho
+preditivo segundo as métricas de acurácia.
+
+\vspace{0.3cm}
+
+\centering
+\includegraphics[width=0.8\textwidth]{../images/comparacao_modelos_acuracia.png}
+\end{frame}
+}
+
+{
+\bgbranco
+\begin{frame}{Comparação Final — Ranqueamento}
+As métricas de ranqueamento permitem avaliar a qualidade das listas
+de recomendação geradas pelos modelos.
+
+\vspace{0.3cm}
+
+\centering
+\includegraphics[width=0.8\textwidth]{../images/comparacao_modelos_ranking.png}
+\end{frame}
+}
