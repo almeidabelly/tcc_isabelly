@@ -2,19 +2,25 @@
 \sectionframe{Conclusão}
 
 % ------------------------------------------------------
-% CONCLUSÕES
+% CONCLUSÃO
 % ------------------------------------------------------
 {
 \bgbranco
-\begin{frame}{Conclusões}
+\begin{frame}{Conclusão}
+
+A avaliação conjunta de erro e ranqueamento indica que o modelo híbrido FC+BC ($\beta = 0{,}7$) apresenta o melhor compromisso entre desempenho e aplicabilidade.
+
+\vspace{1cm}
+
 \begin{itemize}
-  \item O trabalho avaliou diferentes abordagens de sistemas de recomendação
-  \item Modelos híbridos apresentaram melhor desempenho global
-  \item A integração de previsões reduziu limitações individuais dos modelos
-  \item Os resultados confirmam a viabilidade da aplicação no contexto de jogos de tabuleiro
+    \item Erros preditivos (MAE e RMSE) competitivos,
+    \item Redução do problema de \textit{cold-start} via componente Baseado em Conteúdo,
+    \item Melhor qualidade do ranking (Precision@10 e Recall@10).
 \end{itemize}
+
 \end{frame}
 }
+
 
 % ------------------------------------------------------
 % LIMITAÇÕES E TRABALHOS FUTUROS
@@ -22,14 +28,17 @@
 {
 \bgbranco
 \begin{frame}{Limitações e Trabalhos Futuros}
+
 \begin{itemize}
-  \item Avaliação restrita a dados históricos (offline)
-  \item Ausência de validação com usuários reais
-  \item Possibilidade de inclusão de dados temporais
-  \item Exploração de modelos baseados em aprendizado profundo
+    \item Avaliação restrita a ambiente offline
+    \item Baseline heurístico por limitações computacionais
+    \item Extensão para Baseline regularizado ou Fatoração de Matrizes
+    \item Enriquecimento do conteúdo dos itens (atributos adicionais)
 \end{itemize}
+
 \end{frame}
 }
+
 
 % ------------------------------------------------------
 % SLIDE FINAL

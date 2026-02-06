@@ -205,9 +205,9 @@ permitindo avaliar os ganhos obtidos pelos modelos mais complexos.
 \small
 \begin{tabular}{lcccc}
 \toprule
-Modelo & MAE & RMSE & Precision@k & Recall@k \\
+Modelo & RMSE & MAE & Precision@k & Recall@k \\
 \midrule
-Baseline & XX.XXX & XX.XXX & XX.XXX & XX.XXX \\
+Baseline & 1,1141 & 0,8352 & 0,8489 & 0,1721 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -223,8 +223,96 @@ Baseline & XX.XXX & XX.XXX & XX.XXX & XX.XXX \\
 }
 
 
+% =======================================================
+% 4.6.1 COMPARAÇÃO ENTRE OS MODELOS
+% =======================================================
+{
+\bgbranco
+\begin{frame}{Desempenho dos Modelos Individuais}
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Modelo} & \textbf{RMSE} & \textbf{MAE} & \textbf{P@10} & \textbf{R@10} \\
+        \midrule
+        FC User--User (Pearson, $K=50$)       & 1,0895 & 0,8159 & 0,8709 & 0,1781 \\
+        Baseline ($\mu + b_u + b_i$)  & 1,1141 & 0,8352 & 0,8489 & 0,1721 \\
+        BC Item--Item (Jaccard, $K=30$)       & 1,1865 & 0,8877 & 0,7917 & 0,1595 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\end{frame}
+}
+
+% ===============================================
+% 4.6.2 INTERPRETAÇÃO DOS RESULTADOS
+% ===============================================
+{
+\bgbranco
+\begin{frame}{Limitações dos Modelos Individuais}
+
+\begin{itemize}
+
+    \item \textbf{Filtragem Colaborativa}
+    \begin{itemize}
+        \item Melhor desempenho preditivo
+        \item Sensível à esparsidade e ao \textit{cold-start}
+    \end{itemize}
+
+    \item \textbf{Baseline}
+    \begin{itemize}
+        \item Estável e computacionalmente eficiente
+        \item Baixa capacidade de personalização
+    \end{itemize}
+
+    \item \textbf{Baseado em Conteúdo}
+    \begin{itemize}
+        \item Maior cobertura do sistema
+        \item Desempenho preditivo inferior
+    \end{itemize}
+
+\end{itemize}
+
+\end{frame}
+}
+
+% =======================================================
+% 4.6.3 MOTIVAÇÃO PARA O MODELO HÍBRIDO
+% =======================================================
+{
+\bgbranco
+\begin{frame}{Estratégia de Integração Híbrida}
+
+\begin{itemize}
+
+    \item Nenhuma abordagem isolada garante robustez em cenários reais.
+
+    \item Proposta: combinar modelos para explorar vantagens complementares.
+
+    \item Modelos implementados:
+    \begin{itemize}
+        \item \textbf{FC + BL}
+        \item \textbf{FC + BC}
+    \end{itemize}
+
+    \item Objetivos:
+    \begin{itemize}
+        \item Melhorar desempenho preditivo
+        \item Reduzir efeitos do \textit{cold-start}
+        \item Aumentar estabilidade das recomendações
+    \end{itemize}
+
+\end{itemize}
+
+\end{frame}
+}
+
+
 % ======================================================
-% 4.6 MODELO HÍBRIDO — ACURÁCIA
+% 4.7 MODELO HÍBRIDO — ACURÁCIA
 % ======================================================
 {
 \bgbranco
@@ -247,7 +335,7 @@ Baseline & XX.XXX & XX.XXX & XX.XXX & XX.XXX \\
 }
 
 % ======================================================
-% 4.6 MODELO HÍBRIDO — RANKING
+% 4.7 MODELO HÍBRIDO — RANKING
 % ======================================================
 {
 \bgbranco
@@ -271,7 +359,7 @@ Baseline & XX.XXX & XX.XXX & XX.XXX & XX.XXX \\
 
 
 % ======================================================
-% 4.7 COMPARAÇÃO FINAL DOS MODELOS
+% 4.8 COMPARAÇÃO FINAL DOS MODELOS
 % ======================================================
 {
 \bgbranco

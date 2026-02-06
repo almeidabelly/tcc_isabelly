@@ -11,13 +11,14 @@ Sistemas de recomendação são ferramentas computacionais projetadas para
 auxiliar usuários na descoberta de itens de interesse em ambientes com
 grande volume de opções.
 
-\vspace{0.4cm}
+% \vspace{0.4cm}
 
-\begin{itemize}
-  \item Utilizados em domínios como filmes, músicas, produtos e jogos
-  \item Baseiam-se em dados históricos de interação dos usuários
-  \item Buscam reduzir a sobrecarga de escolha
-\end{itemize}
+% \begin{itemize}
+%   \item Utilizados em domínios como filmes, músicas, produtos e jogos
+%   \item Baseiam-se em dados históricos de interação dos usuários
+%   \item Buscam reduzir a sobrecarga de escolha
+% \end{itemize}
+
 \end{frame}
 }
 
@@ -137,7 +138,7 @@ A predição é obtida considerando os \(k\) itens mais similares:
 
 \textbf{Vantagens}
 \begin{itemize}
-  \item Menor impacto do \textit{cold-start} de usuários
+  \item Menor impacto do \textit{cold-start} de itens
 \end{itemize}
 
 \textbf{Desvantagens}
@@ -189,15 +190,15 @@ Os sistemas híbridos combinam diferentes abordagens de recomendação,
 buscando explorar suas vantagens complementares.
 
 \[
-\hat{r}_{ui}^{(h)} =
-\alpha\,\hat{r}_{ui}^{(FC)} +
-(1-\alpha)\,\hat{r}_{ui}^{(BC)}
+\hat{r}_{u,i}^{(H)} =
+\beta\,\hat{r}_{u,i}^{(SR_1)} +
+(1-\beta)\,\hat{r}_{u,i}^{(SR_2)}, 
+\text{     onde $\beta \in [0,1]$}
 \]
-
 \vspace{0.3cm}
 
 \begin{itemize}
-  \item Integra filtragem colaborativa e conteúdo
+  \item Integra duas abordagens distintas
   \item Reduz limitações individuais dos modelos
 \end{itemize}
 \end{frame}
@@ -223,37 +224,75 @@ As medidas de similaridade variam conforme o tipo de sistema de recomendação.
 }
 
 % ======================================================
-% MÉTRICAS DE AVALIAÇÃO
+% MÉTRICAS DE ACURÁCIA
 % ======================================================
 {
 \bgbranco
-\begin{frame}{Métricas de Avaliação}
-As métricas de avaliação foram divididas em dois grupos:
+\begin{frame}{Métricas de Avaliação — Acurácia}
+
+Avaliam o erro entre os valores reais observados e as previsões geradas pelos modelos.
 
 \vspace{0.3cm}
 
-\textbf{Métricas de Acurácia}
+\textbf{Erro Médio Absoluto (MAE)}
 \[
 \text{MAE} =
-\frac{1}{N}\sum |r_{ui} - \hat{r}_{ui}|
+\frac{1}{N}\sum |r_{ui} - \hat{r}_{ui}|,
 \]
 
-\[
-\text{RMSE} =
-\sqrt{\frac{1}{N}\sum (r_{ui} - \hat{r}_{ui})^2}
-\]
+{\footnotesize
+penaliza todos os desvios de forma linear mantendo a unidade original da variável analisada.
+}
 
 \vspace{0.3cm}
 
-\textbf{Métricas de Ranqueamento}
+\textbf{Raiz do Erro Quadrático Médio (RMSE)}
 \[
-\text{Precision@k} =
-\frac{| \text{itens relevantes} \cap \text{top-}k |}{k}
+\text{RMSE} =
+\sqrt{\frac{1}{N}\sum (r_{ui} - \hat{r}_{ui})^2},
 \]
 
+{\footnotesize
+Atribui maior peso a erros de grande magnitude, sendo sensível a previsões muito distantes dos valores reais.
+}
+
+\end{frame}
+}
+
+
+% ======================================================
+% MÉTRICAS DE RANQUEAMENTO
+% ======================================================
+{
+\bgbranco
+\begin{frame}{Métricas de Avaliação — Ranqueamento}
+
+Avaliam a capacidade do modelo em priorizar corretamente os itens mais relevantes entre as primeiras posições da recomendação.
+
+\vspace{0.4cm}
+
+\textbf{Precision@k}
+\[
+\text{Precision@k} =
+\frac{| \text{itens relevantes} \cap \text{top-}k |}{k},\text{}
+\]
+
+{\footnotesize
+Indica a proporção de itens relevantes entre os $k$ primeiros recomendados, refletindo a qualidade do topo da lista.
+}
+
+\vspace{0.35cm}
+
+\textbf{Recall@k}
 \[
 \text{Recall@k} =
 \frac{| \text{itens relevantes} \cap \text{top-}k |}{|\text{itens relevantes}|}
 \]
+
+{\footnotesize
+Mede a capacidade do modelo em recuperar os itens relevantes disponíveis, considerando o conjunto total de itens de interesse do usuário.
+}
+
 \end{frame}
 }
+
